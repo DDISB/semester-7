@@ -1,0 +1,145 @@
+{\rtf1\ansi\ansicpg1251\deff0\deflang1049{\fonttbl{\f0\fnil\fcharset204 MS Sans Serif;}{\f1\fswiss\fcharset204 Tahoma;}{\f2\fswiss\fcharset0 Tahoma;}{\f3\fnil MS Sans Serif;}{\f4\fnil\fcharset0 MS Sans Serif;}}
+\viewkind4\uc1\pard\f0\fs16\'c3\'c8\'cf\'ce\'d2\'c5\'c7\'db:
+\par \f1\'ec\'e0\'f8\'e8\'ed\'e0 \lang1033\f2\{Volkswagen\lang1049\f1 _\lang1033\f2 Passat, Lada_Vesta, Toyota\lang1049\f1 _\lang1033\f2 Mark\lang1049\f1 _2\lang1033\f2 , Porsche_Cayenne, Volkswagen_Tiguan, Lada_Niva, Chery_Tiggo_8_Pro_Max, Aurus\lang1049\f1 _\lang1033\f2 Senat\}\lang1049\f3 
+\par \lang1033\f2 
+\par \lang1049\f0\'cf\'c0\'d0\'c0\'cc\'c5\'d2\'d0\'db:
+\par \lang1033\f1\'e1\'fe\'e4\'e6\'e5\'f2 \{\'e4\'ee_3M, \'e1\'ee\'eb\'e5\'e5_3\'cc\}
+\par \'ec\'ee\'f9\'ed\'ee\'f1\'f2\'fc_\'e4\'e2\'e8\'e3\'e0\'f2\'e5\'eb\'ff \{\'e4\'ee_250\'eb\'f1, \'e1\'ee\'eb\'e5\'e5_250\'eb\'f1\}
+\par \'f2\'e8\'ef_\'e4\'e2\'e8\'e3\'e0\'f2\'e5\'eb\'ff \{\'e1\'e5\'ed\'e7\'e8\'ed, \'e4\'e8\'e7\'e5\'eb\'fc\}
+\par \'ea\'ee\'f0\'ee\'e1\'ea\'e0_\'ef\'e5\'f0\'e5\'e4\'e0\'f7 \{\'ec\'e5\'f5\'e0\'ed\'e8\'ea\'e0, \'ed\'e5_\'ec\'e5\'f5\'e0\'ed\'e8\'ea\'e0\}
+\par \'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \{\'f0\'ee\'f1\'f1\'e8\'ff, \'ea\'e8\'f2\'e0\'e9, \'e8\'ed\'ee\'ec\'e0\'f0\'ea\'e0\}
+\par \'ed\'e0\'e7\'ed\'e0\'f7\'e5\'ed\'e8\'e5_\'ec\'e0\'f8\'e8\'ed\'fb \{\'f1\'e5\'ec\'e5\'e9\'ed\'e0\'ff, \'e2\'e5\'f1\'e5\'eb\'e0\'ff\}
+\par \'ef\'f0\'ee\'e4\'e0\'b8\'f2\'f1\'ff_\'e2_\'f0\'f4 \{\'e4\'e0, \'ed\'e5\'f2\}\f2 
+\par \lang1049\f3 
+\par \f0\'cf\'c5\'d0\'c5\'cc\'c5\'cd\'cd\'db\'c5:
+\par \f3 NAME \f0\'ef1
+\par IF \'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee  \'ea\'e8\'f2\'e0\'e9
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0  Chery_Tiggo_8_Pro_Max [0,8]
+\par ELSE
+\par \lang1033\f2 END\lang1049\f3 
+\par \f0 
+\par \f3 NAME \f0\'ef\f3 2
+\par IF \lang1033\f1\'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \lang1049\'f0\'ee\'f1\'f1\'e8\'ff\f3  AND\f4  \lang1033\f1\'ec\'ee\'f9\'ed\'ee\'f1\'f2\'fc_\'e4\'e2\'e8\'e3\'e0\'f2\'e5\'eb\'ff\lang1049\f3  \f0\'e1\'ee\'eb\'e5\'e5_\f3 250\f0\'eb\'f1\f3 
+\par THEN \f0\'ec\'e0\'f8\'e8\'ed\'e0   Aurus_Senat [0,8]\f3 
+\par ELSE
+\par END\f0 
+\par 
+\par \f3 NAME \f0\'ef3
+\par IF \'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \'f0\'ee\'f1\'f1\'e8\'ff AND \'e1\'fe\'e4\'e6\'e5\'f2 \'e4\'ee_3M AND \'ea\'ee\'f0\'ee\'e1\'ea\'e0_\'ef\'e5\'f0\'e5\'e4\'e0\'f7 \'ec\'e5\'f5\'e0\'ed\'e8\'ea\'e0
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0    Lada_Niva [0,9]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef4
+\par IF \'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \'f0\'ee\'f1\'f1\'e8\'ff AND \'e1\'fe\'e4\'e6\'e5\'f2 \'e4\'ee_3M AND \'ea\'ee\'f0\'ee\'e1\'ea\'e0_\'ef\'e5\'f0\'e5\'e4\'e0\'f7 \'ed\'e5_\'ec\'e5\'f5\'e0\'ed\'e8\'ea\'e0
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0    Lada_Vesta [0,8]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef5
+\par IF \'e1\'fe\'e4\'e6\'e5\'f2 \'e1\'ee\'eb\'e5\'e5_3\'cc AND \'ec\'ee\'f9\'ed\'ee\'f1\'f2\'fc_\'e4\'e2\'e8\'e3\'e0\'f2\'e5\'eb\'ff \'e1\'ee\'eb\'e5\'e5_250\'eb\'f1 AND \'f2\'e8\'ef_\'e4\'e2\'e8\'e3\'e0\'f2\'e5\'eb\'ff \'e1\'e5\'ed\'e7\'e8\'ed
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Porsche_Cayenne [0,7]
+\par \'ec\'e0\'f8\'e8\'ed\'e0 Aurus_Senat [0,3]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef6
+\par IF \'e1\'fe\'e4\'e6\'e5\'f2 \'e1\'ee\'eb\'e5\'e5_3\'cc AND \'ec\'ee\'f9\'ed\'ee\'f1\'f2\'fc_\'e4\'e2\'e8\'e3\'e0\'f2\'e5\'eb\'ff \'e4\'ee_250\'eb\'f1
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Volkswagen_Tiguan [0,9]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef7
+\par IF \'ed\'e0\'e7\'ed\'e0\'f7\'e5\'ed\'e8\'e5_\'ec\'e0\'f8\'e8\'ed\'fb \'e2\'e5\'f1\'e5\'eb\'e0\'ff AND \'ea\'ee\'f0\'ee\'e1\'ea\'e0_\'ef\'e5\'f0\'e5\'e4\'e0\'f7 \'ec\'e5\'f5\'e0\'ed\'e8\'ea\'e0
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Toyota_Mark_2 [0,5]
+\par \'ec\'e0\'f8\'e8\'ed\'e0 Lada_Niva [0,5]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef8
+\par IF \'ed\'e0\'e7\'ed\'e0\'f7\'e5\'ed\'e8\'e5_\'ec\'e0\'f8\'e8\'ed\'fb \'e2\'e5\'f1\'e5\'eb\'e0\'ff AND \'ef\'f0\'ee\'e4\'e0\'b8\'f2\'f1\'ff_\'e2_\'f0\'f4 \'ed\'e5\'f2
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Porsche_Cayenne [0,9]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef9
+\par IF \'ed\'e0\'e7\'ed\'e0\'f7\'e5\'ed\'e8\'e5_\'ec\'e0\'f8\'e8\'ed\'fb \'f1\'e5\'ec\'e5\'e9\'ed\'e0\'ff AND \'ef\'f0\'ee\'e4\'e0\'b8\'f2\'f1\'ff_\'e2_\'f0\'f4 \'ed\'e5\'f2
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Volkswagen_Passat [0,5]
+\par \'ec\'e0\'f8\'e8\'ed\'e0 Volkswagen_Tiguan [0,5]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef10
+\par IF \'f2\'e8\'ef_\'e4\'e2\'e8\'e3\'e0\'f2\'e5\'eb\'ff \'e4\'e8\'e7\'e5\'eb\'fc
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Volkswagen_Passat [0,8]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef11
+\par IF \'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \'e8\'ed\'ee\'ec\'e0\'f0\'ea\'e0 AND \'e1\'fe\'e4\'e6\'e5\'f2 \'e4\'ee_3M AND \'ed\'e0\'e7\'ed\'e0\'f7\'e5\'ed\'e8\'e5_\'ec\'e0\'f8\'e8\'ed\'fb \'e2\'e5\'f1\'e5\'eb\'e0\'ff
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Toyota_Mark_2 [0,9]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef12
+\par IF \'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \'e8\'ed\'ee\'ec\'e0\'f0\'ea\'e0 AND \'e1\'fe\'e4\'e6\'e5\'f2 \'e4\'ee_3M AND \'ed\'e0\'e7\'ed\'e0\'f7\'e5\'ed\'e8\'e5_\'ec\'e0\'f8\'e8\'ed\'fb \'f1\'e5\'ec\'e5\'e9\'ed\'e0\'ff AND \'ef\'f0\'ee\'e4\'e0\'b8\'f2\'f1\'ff_\'e2_\'f0\'f4 \'ed\'e5\'f2
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Volkswagen_Passat [0,9]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef13
+\par IF \'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \'e8\'ed\'ee\'ec\'e0\'f0\'ea\'e0 AND \'e1\'fe\'e4\'e6\'e5\'f2 \'e1\'ee\'eb\'e5\'e5_3\'cc AND \'ed\'e0\'e7\'ed\'e0\'f7\'e5\'ed\'e8\'e5_\'ec\'e0\'f8\'e8\'ed\'fb \'f1\'e5\'ec\'e5\'e9\'ed\'e0\'ff
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Volkswagen_Tiguan [0,9]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef14
+\par IF \'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \'ea\'e8\'f2\'e0\'e9 AND \'ed\'e0\'e7\'ed\'e0\'f7\'e5\'ed\'e8\'e5_\'ec\'e0\'f8\'e8\'ed\'fb \'f1\'e5\'ec\'e5\'e9\'ed\'e0\'ff
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Chery_Tiggo_8_Pro_Max [1,0]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef15
+\par IF \'ea\'ee\'f0\'ee\'e1\'ea\'e0_\'ef\'e5\'f0\'e5\'e4\'e0\'f7 \'ed\'e5_\'ec\'e5\'f5\'e0\'ed\'e8\'ea\'e0 AND \'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \'f0\'ee\'f1\'f1\'e8\'ff AND \'e1\'fe\'e4\'e6\'e5\'f2 \'e4\'ee_3M
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Lada_Vesta [0,8]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef16
+\par IF \'ea\'ee\'f0\'ee\'e1\'ea\'e0_\'ef\'e5\'f0\'e5\'e4\'e0\'f7 \'ec\'e5\'f5\'e0\'ed\'e8\'ea\'e0 AND \'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \'f0\'ee\'f1\'f1\'e8\'ff
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Lada_Niva [0,6]
+\par \'ec\'e0\'f8\'e8\'ed\'e0 Lada_Vesta [0,4]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef17
+\par IF \'ef\'f0\'ee\'e4\'e0\'b8\'f2\'f1\'ff_\'e2_\'f0\'f4 \'e4\'e0 AND \'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \'e8\'ed\'ee\'ec\'e0\'f0\'ea\'e0 AND \'e1\'fe\'e4\'e6\'e5\'f2 \'e4\'ee_3M
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Toyota_Mark_2 [0,9]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef18
+\par IF \'ef\'f0\'ee\'e4\'e0\'b8\'f2\'f1\'ff_\'e2_\'f0\'f4 \'ed\'e5\'f2 AND \'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \'e8\'ed\'ee\'ec\'e0\'f0\'ea\'e0
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Volkswagen_Passat [0,4]
+\par \'ec\'e0\'f8\'e8\'ed\'e0 Volkswagen_Tiguan [0,4]
+\par \'ec\'e0\'f8\'e8\'ed\'e0 Porsche_Cayenne [0,2]
+\par ELSE
+\par END
+\par 
+\par NAME \'ef19
+\par IF \'e1\'fe\'e4\'e6\'e5\'f2 \'e4\'ee_3M AND \'ec\'ee\'f9\'ed\'ee\'f1\'f2\'fc_\'e4\'e2\'e8\'e3\'e0\'f2\'e5\'eb\'ff \'e4\'ee_250\'eb\'f1 AND \'f2\'e8\'ef_\'e4\'e2\'e8\'e3\'e0\'f2\'e5\'eb\'ff \'e1\'e5\'ed\'e7\'e8\'ed AND \'ea\'ee\'f0\'ee\'e1\'ea\'e0_\'ef\'e5\'f0\'e5\'e4\'e0\'f7 \'ec\'e5\'f5\'e0\'ed\'e8\'ea\'e0
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Lada_Vesta [0,3]
+\par \'ec\'e0\'f8\'e8\'ed\'e0 Lada_Niva [0,3]
+\par \'ec\'e0\'f8\'e8\'ed\'e0 Toyota_Mark_II [0,3]
+\par ELSE
+\par END\lang1033\f4 
+\par \lang1049\f0 
+\par NAME \'ef20
+\par IF \'ed\'e0\'e7\'ed\'e0\'f7\'e5\'ed\'e8\'e5_\'ec\'e0\'f8\'e8\'ed\'fb \'f1\'e5\'ec\'e5\'e9\'ed\'e0\'ff AND \'ef\'f0\'ee\'e4\'e0\'b8\'f2\'f1\'ff_\'e2_\'f0\'f4 \'e4\'e0 AND \lang1033\f4 NOT \lang1049\f0\'ef\'f0\'ee\'e8\'e7\'e2\'ee\'e4\'f1\'f2\'e2\'ee \'ea\'e8\'f2\'e0\'e9
+\par THEN \'ec\'e0\'f8\'e8\'ed\'e0 Lada_Vesta [0,4]
+\par \'ec\'e0\'f8\'e8\'ed\'e0 Chery_Tiggo_8_Pro_Max [0,3]
+\par \'ec\'e0\'f8\'e8\'ed\'e0 Aurus_Senat [0,2]
+\par ELSE
+\par END
+\par }
+ 

@@ -62,7 +62,7 @@ def load_dbf_data(dbf_file_path):
 
 
 # Загрузка данных
-X_tensor, y_tensor, dataset, dataloader, num_features, norm_params, X_original, y_original = load_dbf_data("car_rating_data1000.dbf")
+X_tensor, y_tensor, dataset, dataloader, num_features, norm_params, X_original, y_original = load_dbf_data("car_rating_data.dbf")
 X_mean, X_std, y_mean, y_std = norm_params
 
 # Денормализация целевой переменной для визуализации
@@ -287,4 +287,4 @@ def test_model_on_new_data(model, dbf_file_path, norm_params):
     return y_new, predicted_real, errors
 
 # Пример использования функции:
-test_model_on_new_data(model, "car_rating_data.dbf", norm_params)
+test_model_on_new_data(model, "car_rating_dataTEST.dbf", norm_params)

@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 import dbf
 
-XLSX_FILE_NAME = "car_rating_data1000.xlsx"
-DBF_FILE_NAME = f"car_rating_data1000.dbf"
+XLSX_FILE_NAME = "car_rating_dataTEST.xlsx"
+DBF_FILE_NAME = f"car_rating_dataTEST.dbf"
 
 # Устанавливаем seed для воспроизводимости результатов
-np.random.seed(44)
+np.random.seed(47)
 
 # Количество строк
-n_rows = 1000
+n_rows = 100
 
 # Генерация синтетических данных для параметров автомобиля
 data = {

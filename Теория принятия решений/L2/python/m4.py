@@ -101,7 +101,7 @@ class FeedForwardNN(nn.Module):
 
 # ИСПРАВЛЕНО: Используем правильную размерность входа
 input_dim = num_features
-hidden_dim = 64  # Увеличиваем количество нейронов
+hidden_dim = 128  # Увеличиваем количество нейронов
 output_dim = 1   # Регрессия (один выход)
 
 model = FeedForwardNN(input_dim, hidden_dim, output_dim)
@@ -168,26 +168,26 @@ plt.grid(True, alpha=0.3)
 plt.tight_layout()
 # plt.show()
 
-# # Дополнительная визуализация: ошибки предсказания (в денормализованных единицах)
-# errors = y_sorted - predicted_sorted.flatten()
-# plt.figure(figsize=(14, 6))
-# plt.plot(x_indices, errors, 'o-', alpha=0.7, color='purple')
-# plt.axhline(y=0, color='black', linestyle='--', alpha=0.5)
-# plt.xlabel('Индекс наблюдения (отсортированный по рейтингу)')
-# plt.ylabel('Ошибка предсказания')
-# plt.title('Ошибки предсказания (Истинное - Предсказанное) в денормализованных единицах')
-# plt.grid(True, alpha=0.3)
-# plt.tight_layout()
-# # plt.show()
+# Дополнительная визуализация: ошибки предсказания (в денормализованных единицах)
+errors = y_sorted - predicted_sorted.flatten()
+plt.figure(figsize=(14, 6))
+plt.plot(x_indices, errors, 'o-', alpha=0.7, color='purple')
+plt.axhline(y=0, color='black', linestyle='--', alpha=0.5)
+plt.xlabel('Индекс наблюдения (отсортированный по рейтингу)')
+plt.ylabel('Ошибка предсказания')
+plt.title('Ошибки предсказания (Истинное - Предсказанное) в денормализованных единицах')
+plt.grid(True, alpha=0.3)
+plt.tight_layout()
+# plt.show()
 
 # Оценка качества модели на денормализованных данных
-# mse_denormalized = np.mean(errors**2)
-# print(f'Final MSE Loss (денормализованный): {mse_denormalized:.4f}')
+mse_denormalized = np.mean(errors**2)
+print(f'Final MSE Loss (денормализованный): {mse_denormalized:.4f}')
 
 # Вывод статистики ошибок в денормализованных единицах
-# print(f'Средняя абсолютная ошибка (MAE): {np.mean(np.abs(errors)):.4f}')
-# print(f'Максимальная ошибка: {np.max(np.abs(errors)):.4f}')
-# print(f'Стандартное отклонение ошибок: {np.std(errors):.4f}')
+print(f'Средняя абсолютная ошибка (MAE): {np.mean(np.abs(errors)):.4f}')
+print(f'Максимальная ошибка: {np.max(np.abs(errors)):.4f}')
+print(f'Стандартное отклонение ошибок: {np.std(errors):.4f}')
 
 def test_model_on_new_data(model, dbf_file_path, norm_params):
     """

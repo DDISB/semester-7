@@ -165,6 +165,45 @@ def predict_test_data_with_actual(model, test_dbf_file_path, norm_params, num_fe
     
     return predictions_normalized, predictions_denormalized, test_features_original, y_actual
 
+# def print_predictions_results_with_error(predictions_denormalized, test_features_original, actual_values, norm_params):
+#     """
+#     Красиво выводит результаты прогнозирования с ошибкой
+#     """
+#     X_mean, X_std, y_mean, y_std = norm_params
+    
+#     print("\n" + "="*80)
+#     print("РЕЗУЛЬТАТЫ ПРОГНОЗИРОВАНИЯ С ОШИБКОЙ")
+#     print("="*80)
+    
+#     total_error = 0
+#     absolute_errors = []
+    
+#     for i, (pred, features, actual) in enumerate(zip(predictions_denormalized, test_features_original, actual_values)):
+#         pred_value = pred[0]  # предсказанное значение
+#         error = pred_value - actual  # ошибка в рублях
+#         error_percent = (error / actual) * 100  # ошибка в процентах
+#         absolute_error = abs(error)  # абсолютная ошибка
+        
+#         total_error += error
+#         absolute_errors.append(absolute_error)
+        
+#         # print(f"\nВектор #{i+1}:")
+#         # print(f"  Реальный рейтинг: {actual:.2f}")
+#         # print(f"  Прогнозируемый рейтинг: {pred_value:.2f}")
+#         # print(f"  Ошибка: {error:+.2f}")
+#         # print(f"  Абсолютная ошибка: {absolute_error:.2f} руб.")
+
+# # 2. Прогнозируем на тестовых данных с реальными значениями
+# test_predictions_norm, test_predictions_denorm, test_features, actual_values = predict_test_data_with_actual(
+#     model=model,
+#     test_dbf_file_path="car_rating_dataTEST.dbf",
+#     norm_params=norm_params,
+#     num_features=num_features
+# )
+
+# # 3. Выводим результаты с ошибкой
+# print_predictions_results_with_error(test_predictions_denorm, test_features, actual_values, norm_params)
+
 def print_predictions_results_with_error(predictions_denormalized, test_features_original, actual_values, norm_params):
     """
     Красиво выводит результаты прогнозирования с ошибкой
@@ -177,6 +216,8 @@ def print_predictions_results_with_error(predictions_denormalized, test_features
     
     total_error = 0
     absolute_errors = []
+    max_error = 0
+    max_error_idx = 0
     
     for i, (pred, features, actual) in enumerate(zip(predictions_denormalized, test_features_original, actual_values)):
         pred_value = pred[0]  # предсказанное значение
@@ -187,21 +228,55 @@ def print_predictions_results_with_error(predictions_denormalized, test_features
         total_error += error
         absolute_errors.append(absolute_error)
         
-        print(f"\nВектор #{i+1}:")
-        print(f"  Реальный рейтинг: {actual:.2f}")
-        print(f"  Прогнозируемый рейтинг: {pred_value:.2f}")
-        print(f"  Ошибка: {error:+.2f}")
+        # Отслеживаем максимальную ошибку
+        if absolute_error > max_error:
+            max_error = absolute_error
+            max_error_idx = i
+        
+        # print(f"\nВектор #{i+1}:")
+        # print(f"  Реальный рейтинг: {actual:.2f}")
+        # print(f"  Прогнозируемый рейтинг: {pred_value:.2f}")
+        # print(f"  Ошибка: {error:+.2f}")
         # print(f"  Абсолютная ошибка: {absolute_error:.2f} руб.")
+    
+    # Вычисляем метрики ошибок
+    mae = np.mean(absolute_errors)  # Средняя абсолютная ошибка (MAE)
+    mse = np.mean([e**2 for e in absolute_errors])  # Среднеквадратичная ошибка
+    rmse = np.sqrt(mse)  # Корень из среднеквадратичной ошибки
+    
+    print(f"\nСТАТИСТИКА ОШИБОК:")
+    print(f"  Количество наблюдений: {len(absolute_errors)}")
+    print(f"  Средняя абсолютная ошибка (MAE): {mae:.4f}")
+    print(f"  Среднеквадратичная ошибка (MSE): {mse:.4f}")
+    print(f"  Корень из среднеквадратичной ошибки (RMSE): {rmse:.4f}")
+    print(f"  Максимальная абсолютная ошибка: {max_error:.4f}")
+    print(f"  Наблюдение с максимальной ошибкой: #{max_error_idx + 1}")
+    
+    # Детали по наблюдению с максимальной ошибкой
+    pred_max_error = predictions_denormalized[max_error_idx][0]
+    actual_max_error = actual_values[max_error_idx]
+    error_max = pred_max_error - actual_max_error
+    
+    print(f"\nДЕТАЛИ ПО МАКСИМАЛЬНОЙ ОШИБКЕ (наблюдение #{max_error_idx + 1}):")
+    print(f"  Реальное значение: {actual_max_error:.4f}")
+    print(f"  Предсказанное значение: {pred_max_error:.4f}")
+    print(f"  Абсолютная ошибка: {abs(error_max):.4f}")
+    print(f"  Относительная ошибка: {error_max:+.4f} ({error_max/actual_max_error*100:+.2f}%)")
+    
+    # Дополнительная статистика
+    print(f"\nДОПОЛНИТЕЛЬНАЯ СТАТИСТИКА:")
+    print(f"  Медианная абсолютная ошибка: {np.median(absolute_errors):.4f}")
+    print(f"  Стандартное отклонение ошибок: {np.std(absolute_errors):.4f}")
+    print(f"  Минимальная абсолютная ошибка: {np.min(absolute_errors):.4f}")
+    print("="*80)
 
 # 2. Прогнозируем на тестовых данных с реальными значениями
 test_predictions_norm, test_predictions_denorm, test_features, actual_values = predict_test_data_with_actual(
     model=model,
-    test_dbf_file_path="car_rating_data10.dbf",
+    test_dbf_file_path="car_rating_dataTEST.dbf",
     norm_params=norm_params,
     num_features=num_features
 )
 
 # 3. Выводим результаты с ошибкой
 print_predictions_results_with_error(test_predictions_denorm, test_features, actual_values, norm_params)
-
-#ВСЕ!!!!!!!!!!!!!!!!!!

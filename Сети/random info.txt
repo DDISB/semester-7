@@ -1,6 +1,8 @@
-192.168.91.205
-192.168.91.153
+demid - q1w2e3r4
+client - q1w2e3r4
 
+10.0.2.15
+10.0.2.2
 ip -I
 hostname -I
 arp -a
@@ -9,3 +11,5 @@ arp -a
 
 pythorch
 tenserflow
+
+user1 !q1w2e3r4

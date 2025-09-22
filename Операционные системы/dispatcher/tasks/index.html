@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Параллельные потоки и курильщики</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    .section {
+      margin-bottom: 40px;
+    }
+    .log {
+      background: #f0f0f0;
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 200px;
+      overflow-y: auto;
+    }
+    .controls {
+      margin-top: 10px;
+    }
+    .visual {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .actor {
+      flex: 1;
+      border: 1px solid #999;
+      padding: 10px;
+      background: #e0e0e0;
+    }
+    .status {
+      margin-top: 10px;
+      font-size: 0.9em;
+      color: #333;
+    }
+    .highlight {
+      font-weight: bold;
+      color: green;
+    }
+    .bad {
+      font-weight: bold;
+      color: rgb(128, 0, 0);
+    }
+    .smoker-speed {
+      margin-top: 5px;
+      display: block;
+    }
+    .highlight-element {
+      background-color: #ffeb3b; /* Желтый цвет для подсветки текущего элемента */
+    }
+    .file-item {
+      display: inline-block;
+      margin: 5px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      background-color: #f0f0f0;
+    }
+    .removed-item {
+      background-color: red; /* Красный цвет для удалённого элемента */
+      text-decoration: line-through; /* Перечеркнутый текст */
+    }
+  </style>
+</head>
+<body>
+  <div class="section">
+    <h2>1. Алгоритм Петерсона</h2>
+    <label>Скорость писателя: <input type="range" min="100" max="2000" value="1000" id="writerSpeed" /></label>
+    <label>Скорость читателя: <input type="range" min="100" max="2000" value="1000" id="readerSpeed" /></label>
+    <div class="controls">
+      <button onclick="startPeterson()">Запустить</button>
+      <button id="petersonPauseBtn" onclick="togglePetersonPause()">Пауза</button>
+    </div>
+    <div class="status" id="petersonStatus"></div>
+    <div class="log" id="petersonLog"></div>
+    <div id="fileContainer"></div> <!-- Контейнер для отображения элементов файла -->
+  </div>
+
+  <div class="section">
+    <h2>2. Задача о курильщиках</h2>
+    <div class="controls">
+      <button onclick="startSmokers()">Запустить</button>
+      <button id="smokerPauseBtn" onclick="toggleSmokerPause()">Пауза</button>
+    </div>
+    <div class="visual">
+      <div class="actor" id="agent">Агент</div>
+      <div class="actor" id="smoker1"><div>Курильщик 1 (табак)</div></div>
+      <div class="actor" id="smoker2"><div>Курильщик 2 (бумага)</div></div>
+      <div class="actor" id="smoker3"><div>Курильщик 3 (спички)</div></div>
+    </div>
+    <label>Время курения курильщика 1: <input class="smoker-speed" type="range" min="1000" max="5000" value="2000" id="smokerSpeed0"></label>
+    <label>Время курения курильщика 2: <input class="smoker-speed" type="range" min="1000" max="5000" value="2000" id="smokerSpeed1"></label>
+    <label>Время курения курильщика 3: <input class="smoker-speed" type="range" min="1000" max="5000" value="2000" id="smokerSpeed2"></label>
+    <div class="status" id="semaphoreStatus"></div>
+    <div class="log" id="smokerLog"></div>
+  </div>
+
+
+  <script>
+    // 1. Петерсон
+    let file = [];
+    let petersonLog = document.getElementById('petersonLog');
+    let flag = [false, false];
+    let turn = 0;
+    let isPetersonPaused = false;
+    let petersonPauseBtn = document.getElementById('petersonPauseBtn');
+    let petersonStatus = document.getElementById('petersonStatus');
+    let writerSpeed = document.getElementById('writerSpeed');
+    let readerSpeed = document.getElementById('readerSpeed');
+    let fileContainer = document.getElementById('fileContainer');
+
+    let previousIndex = null; // Указатель на предыдущий элемент читателя
+
+    function logPeterson(msg) {
+      petersonLog.innerHTML += msg + '<br>';
+      petersonLog.scrollTop = petersonLog.scrollHeight;
+      petersonStatus.innerHTML = `flag: [${flag[0]}, ${flag[1]}], turn: ${turn}, текущий ряд: [${file.join(', ')}]`;
+    }
+
+    function togglePetersonPause() {
+      isPetersonPaused = !isPetersonPaused;
+      petersonPauseBtn.textContent = isPetersonPaused ? 'Продолжить' : 'Пауза';
+    }
+
+    async function waitIfPaused() {
+      while (isPetersonPaused) {
+        await new Promise(r => setTimeout(r, 100));
+      }
+    }
+
+    async function delayPeterson(speed) {
+      await waitIfPaused();
+      return new Promise(r => setTimeout(r, parseInt(speed)));
+    }
+
+    // Функция для обновления отображения файла на странице
+    function updateFileDisplay() {
+      file.forEach((num, index) => {
+      const element = document.getElementById(`element-${index}`);
+      if (element) {
+        // Обновляем текст числа, если элемент существует
+        element.textContent = num;
+      } else {
+      // Если элемент не существует, создаём его
+        const newElement = document.createElement('div');
+        newElement.classList.add('file-item');
+        newElement.id = `element-${index}`;
+        newElement.textContent = num;
+        fileContainer.appendChild(newElement);
+      }
+    });
+    }
+
+
+    // Функция для подсветки текущего элемента жёлтым и изменения цвета предыдущего на красный
+    function highlightAndUpdatePreviousElement(index) {
+      if (previousIndex !== null) {
+        // Снимаем подсветку с предыдущего элемента и изменяем его на красный, если он был "удален"
+        let prevElement = document.getElementById(`element-${previousIndex}`);
+        if (prevElement) {
+          if (prevElement.style.backgroundColor === 'red') {
+            prevElement.style.backgroundColor = 'red'; // Если элемент был удалён, оставляем его красным
+          } else {
+            prevElement.style.backgroundColor = ''; // Убираем подсветку
+          }
+        }
+      }
+
+      let currentElement = document.getElementById(`element-${index}`);
+      if (currentElement) {
+        currentElement.style.backgroundColor = 'yellow'; // Подсвечиваем текущий элемент
+      }
+      
+      previousIndex = index; // Обновляем указатель на текущий элемент
+    }
+
+    function startPeterson() {
+      file = [];
+      flag = [false, false];
+      turn = 0;
+      isPetersonPaused = false;
+      petersonPauseBtn.textContent = 'Пауза';
+
+      let readerPointer = 0; // Указатель для читателя
+
+      const writer = async () => {
+        for (let i = 1; i <= 100; i++) {
+          await delayPeterson(writerSpeed.value);
+          flag[0] = true;
+          turn = 1;
+          await delayPeterson(writerSpeed.value);
+          while (flag[1] && turn === 1) await new Promise(r => setTimeout(r, 10));
+          if (i % 3 !== 0) {
+            file.push(i);
+            logPeterson(`Writer записал: ${i}`);
+            updateFileDisplay(); // Обновляем отображение файла
+          }
+          await delayPeterson(writerSpeed.value);
+          flag[0] = false;
+          petersonStatus.innerHTML = `flag: [${flag[0]}, ${flag[1]}], turn: ${turn}`;
+          await delayPeterson(writerSpeed.value);
+        }
+      };
+
+      const reader = async () => {
+        while (true) {
+          await delayPeterson(readerSpeed.value);
+          flag[1] = true;
+          turn = 0;
+          await delayPeterson(readerSpeed.value);
+          while (flag[0] && turn === 0) await new Promise(r => setTimeout(r, 10));
+
+          if (readerPointer < file.length) {
+            let currentElement = file[readerPointer]; // Текущий элемент для проверки
+            highlightAndUpdatePreviousElement(readerPointer); // Подсвечиваем текущий элемент и обновляем предыдущий
+
+            if (currentElement % 2 === 0) {
+              logPeterson(`Reader перекрасил в красный: ${currentElement}`);
+              // Перекрашиваем элемент в красный, но не удаляем
+              let elementId = `element-${readerPointer}`;
+              let element = document.getElementById(elementId);
+              if (element) {
+                element.style.backgroundColor = 'red'; // Красим элемент в красный
+                element.style.textDecoration = 'line-through'; // Перечёркиваем его
+              }
+            } 
+              readerPointer++; // Увеличиваем указатель, если элемент не четный
+            
+            updateFileDisplay(); // Обновляем отображение файла
+          } else {
+            break; // Завершаем цикл, если указатель вышел за пределы массива
+          }
+
+          await delayPeterson(readerSpeed.value);
+          flag[1] = false;
+          petersonStatus.innerHTML = `flag: [${flag[0]}, ${flag[1]}], turn: ${turn}, текущий ряд: [${file.join(', ')}]`;
+          await delayPeterson(readerSpeed.value);
+        }
+      };
+
+      writer();
+      reader();
+    }
+
+    // 2. Курильщики
+    const ingredients = ['табак', 'бумага', 'спички'];
+    let smokerLog = document.getElementById('smokerLog');
+    let isSmokerPaused = false;
+    let smokerPauseBtn = document.getElementById('smokerPauseBtn');
+    let semaphoreStatus = document.getElementById('semaphoreStatus');
+    let semaphore = [false, false, false];
+
+    function updateSemaphores() {
+      semaphoreStatus.innerHTML = `Семафоры (ингредиенты на столе): [${semaphore.map(v => v ? '1' : '0').join(', ')}]`;
+    }
+
+    function toggleSmokerPause() {
+      isSmokerPaused = !isSmokerPaused;
+      smokerPauseBtn.textContent = isSmokerPaused ? 'Продолжить' : 'Пауза';
+    }
+
+    function logSmoker(msg) {
+      smokerLog.innerHTML += msg + '<br>';
+      smokerLog.scrollTop = smokerLog.scrollHeight;
+      updateSemaphores();
+    }
+
+    function updateVisual(active, text) {
+      document.querySelectorAll('.actor').forEach(div => {
+        div.style.background = '#e0e0e0';
+      });
+      if (active) {
+        active.style.background = '#b3e5fc';
+        const label = active.querySelector('div');
+        if (label) label.textContent = text;
+      }
+    }
+
+    async function delayCustom(speedId) {
+      while (isSmokerPaused) await new Promise(r => setTimeout(r, 100));
+      const speed = parseInt(document.getElementById(speedId).value);
+      return new Promise(r => setTimeout(r, speed));
+    }
+
+    async function agentThread() {
+      while (true) {
+        await delayCustom('smokerSpeed0');
+        if (semaphore.includes(true)) continue; 
+
+        let first = Math.floor(Math.random() * 3);
+        let second;
+        do {
+          second = Math.floor(Math.random() * 3);
+        } while (second === first);
+
+        semaphore[first] = true;
+        semaphore[second] = true;
+        updateSemaphores();
+
+        logSmoker(`<span class="highlight">Агент положил</span> ${ingredients[first]} и ${ingredients[second]}`);
+        updateVisual(document.getElementById('agent'), `Агент: ${ingredients[first]} + ${ingredients[second]}`);
+      }
+    }
+
+    async function smokerThread(index) {
+      const element = document.getElementById('smoker' + (index + 1));
+      const needed = [0, 1, 2].filter(i => i !== index);
+      const speedId = 'smokerSpeed' + index;
+      while (true) {
+        await delayCustom(speedId);
+        if (semaphore[needed[0]] && semaphore[needed[1]] && !semaphore[index]) {
+          
+
+          logSmoker(`<span class="highlight">Курильщик ${index + 1}</span> получил недостающее ингридиенты и начал курить`);
+          updateVisual(element, `Курильщик ${index + 1} (${ingredients[index]})`);
+
+          await delayCustom(speedId);
+
+          logSmoker(`<span class="highlight">Курильщик ${index + 1}</span> докурил`);
+          semaphore[needed[0]] = false;
+          semaphore[needed[1]] = false;
+          updateSemaphores();
+          updateVisual(null);
+          new Promise(r => setTimeout(r, 1000));
+        }
+        else{
+          logSmoker(`<span class="bad">Курильщик ${index + 1}</span> не нашел подходяших ингридиентов`);
+          element.style.background = 'red'
+
+        }
+      }
+    }
+
+    function startSmokers() {
+      smokerPauseBtn.textContent = 'Пауза';
+      updateSemaphores();
+      agentThread();
+      smokerThread(0);
+      smokerThread(1);
+      smokerThread(2);
+    }
+  </script>
+</body>
+</html>

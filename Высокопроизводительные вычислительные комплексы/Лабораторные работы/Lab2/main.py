@@ -29,7 +29,7 @@ def l(N, p):
     return num / den
 
 
-t1 = p_n(2.9, 5, 4)
+t1 = p_n(4.3, 5, 6)
 print(round(t1, 4))
 
 t2 = p_n(1.3, 7, 6)

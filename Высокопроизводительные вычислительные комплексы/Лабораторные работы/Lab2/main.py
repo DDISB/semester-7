@@ -29,12 +29,28 @@ def l(N, p):
     return num / den
 
 
-t1 = p_n(1.2, 8, 4)
-print(round(t1, 4))
+# t1 = p_n(3.2, 4, 6)
+# print(round(t1, 4))
 
-t2 = p_n(1.3, 7, 6)
-print(round(t2, 4))
+# t2 = p_n(2.2, 9, 6)
+# print(round(t2, 4))
 
-t3 = l(4, 0.075)
+# t3 = l(1, 0.0571)
+# # print(round(t3, 7))
+# print("{:.8f}".format(t4))
+
+p1 = 0.2285714286
+p2 = 0.1142851701
+p3 = 0.1142840817
+
+t4 = l(1, p1)
 # print(round(t3, 7))
-print("{:.6f}".format(t3))
+print("{:.8f}".format(t4))
+
+t5 = l(2, p2)
+# print(round(t3, 7))
+print("{:.8f}".format(t5))
+
+t6 = l(3, p3)
+# print(round(t3, 7))
+print("{:.8f}".format(t6))

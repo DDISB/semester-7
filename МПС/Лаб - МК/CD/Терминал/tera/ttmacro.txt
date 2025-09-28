@@ -1,0 +1,1450 @@
+	TTMACRO for Tera Term
+	T. Teranishi
+
+	Copyright (C) 1994-1996 T. Teranishi
+	All Rights Reserved.
+
+-------------------------------------------------------------------------------
+INDEX
+
+1. Introduction
+
+2. Installation
+
+3. How to run a macro file
+
+4. Macro language "Tera Term Language (TTL)"
+
+  4.1 Types
+  4.2 Formats of constants
+  4.3 Identifiers and reserved words
+  4.4 Variables
+  4.5 Expressions and operators
+  4.6 Line formats
+
+5. TTL command reference
+
+  5.1 Communication commands
+  5.2 Control commands
+  5.3 String operation commands
+  5.4 File operation commands
+  5.5 Miscellaneous commands
+
+6. Appendixes
+
+  Appendix A	Error messages
+  Appendix B	About new-line characters
+
+-------------------------------------------------------------------------------
+1. Introduction
+
+TTMACRO is an interpreter of the macro language 'Tera Term Language (TTL)',
+which controls Tera Term and provides various functions like auto dialing,
+auto login, and so on.
+
+Note that TTMACRO.EXE is a 16-bit executable file. Long macro filenames
+are not supported.
+-------------------------------------------------------------------------------
+2. Installation
+
+Place TTMACRO.EXE in the directory (folder), in which Tera Term
+is installed.
+
+-------------------------------------------------------------------------------
+3. How to run a macro file
+
+There are two ways to run a macro file.
+
+1) From Tera Term.
+
+To start TTMACRO, select the [Control] Macro command and then the macro file in
+the Open Macro dialog box.
+
+2) From TTMACRO.
+
+The macro file can be specified as a parameter in the command line (shortcut
+link) of TTMACRO. For example, if you want to run the macro file "DIALUP.TTL",
+specify the command line (shortcut link) like:
+
+	TTMACRO DIALUP.TTL
+
+You can omit the file name extension ".TTL". If you omit the file name, the
+Open Macro dialog box appears. It's convenient to install icons (shortcuts)
+for the macro files you use frequently.
+
+If you choose method 2), you can run Tera Term, after starting the TTMACRO,
+by using the "connect" command in the macro file. See the description of the
+"connect" command in section 5.1.5.
+
+While the macro is running, you can pause it, restart it, and stop it by
+pressing the appropriate buttons in the TTMACRO dialog box.
+
+-------------------------------------------------------------------------------
+4. Macro language "Tera Term Language (TTL)"
+
+TTL is a simple interpreted language like BASIC. To learn TTL quickly, study
+the sample macro files in the distribution package and the command reference
+in section 5.
+
+...............................................................................
+4.1 Types
+
+TTL have two kinds of data types:
+
+	Integer
+		Signed 16 bit, from -32768 to 32767.
+
+	Character string
+		A sequence containing any character except NUL.
+		The maximum length of a string is 255.
+
+...............................................................................
+4.2 Formats of constants
+
+1) Integer-type constants
+
+	Expressed as a decimal number.
+
+	Example:
+		123
+		-11
+
+2) String-type constants
+
+	There are two ways of expressing string-type constants.
+
+	a) A character string quoted by ' or " (both sides must be same).
+
+	Example:
+		'Hello, world'
+		"I can't do that"
+
+	b) A single character expressed as a "#" followed by an ASCII code
+	(decimal number).
+		Note:	Strings can not contain NUL (ASCII code 0) characters.
+
+	Example:
+		#65		the character "A"
+		#13		the CR character
+
+	Format a) and b) can be combined in an expression.
+
+	Example:
+		'cat readme.txt'#13#10
+		'abc'#13#10'def'#13#10'ghi'
+
+...............................................................................
+4.3 Identifiers and reserved words
+
+1) Variable identifiers
+
+The first character must be an alphabetic (A-Z, a-z) or an underscore
+character "_". Subsequent characters can be alphabetic, underscore, or numeric
+(0-9). Variable identifiers are not case sensitive. The maximum length is 32.
+
+	Example:
+		VARIABLE
+		_flag
+
+2) Label identifiers
+
+Label identifiers consist of alphabetic, underscore, or numeric characters,
+and are not case sensitive. The maximum length is 32.
+
+	Example:
+		label1
+		100
+
+3) Reserved words
+
+The following words are reserved:
+
+[Command]
+	beep, bplusrecv, bplussend... (see the list in section 5.)
+
+[Operator]
+	and, not, or, xor
+
+[System variables]
+	inputstr, param2, param3, result, timeout
+
+...............................................................................
+4.4 Variables
+
+1) User variables
+
+Defined by user. The type of a variable is determined when a value
+(integer or string) is assigned to it for first time. Once the type of
+the variable is determined, values of a different type can not be
+assigned to it.
+
+2) System variables
+
+Variables which have a predefined type and value. Used with particular
+commands.
+
+Variables	Type	Initial value	Related commands
+------------------------------------------------------------------------
+inputstr	string		''	inputbox, passwordbox
+param2		string		*1	*1
+param3		string		*1	*1
+result		integer		0	filereadln, filesearch, filestrseek,
+					str2int, strcompare, strlen, strscan,
+					wait, waitrecv, yesnobox
+timeout		integer		0	wait, waitrecv
+
+	*1 Second and third command line parameter of TTMACRO. The first
+	parameter is the macro file name.
+
+...............................................................................
+4.5 Expressions and operators
+
+Expressions consist of constants, variables, operators, and parentheses.
+Constants and variables must be of the integer type. The value of an
+expression is also an integer. The values of a relational expression
+(formed using relational operators) are 0, if it is true, or 1 if false.
+
+The following are operators:
+
+Category	Precedence	Operators
+--------------------------------------------------------------
+unary		1, high		not
+multiplicative	2		*, /
+additive	3		+, -, or, xor
+relational	4, low		=, <>, <, >, <=, >=
+
+...............................................................................
+4.6 Line formats
+
+There are five kinds of line formats in the macro files.
+
+1) Empty lines
+
+Lines which have no character or contain only space and tab characters.
+They have no effect on the execution of the macro.
+
+2) Comment lines
+
+Lines beginning with a ';' character. No effect on the execution of the macro.
+
+	Example:
+		; Tera Term Language
+
+3) Command lines
+
+Lines containing a single command with parameters (the one exception is the
+"if" command (see 5.2.7)).
+
+	Format:
+		<command> <parameter> ...
+	Example:
+		connect'myhost'
+		wait 'OK' 'ERROR'
+		if result=2 goto error
+		sendln 'cat'
+		pause A*10
+		end
+
+4) Assignment lines
+
+Lines which contain an assignment statement.
+
+	Format:
+		<Variable> = <Value (constant, variable, expression)>
+	Example:
+		A = 33
+		B = C		C must already have a value.
+		VAL = I*(I+1)
+		A=B=C		the value of B=C (0 for false, 1 for true) is
+				assigned to A.
+		Error=0<J
+		Username='MYNAME'
+
+5) Label lines
+
+Lines which begin with a ':' character followed by a label identifier.
+
+	Format:
+		:<Label>
+	Example:
+		:dial
+		:100
+
+-------------------------------------------------------------------------------
+5. TTL command reference
+
+Command index
+
+5.1 Communication commands
+
+	5.1.1 bplusrecv
+	5.1.2 bplussend
+	5.1.3 changedir
+	5.1.4 closett
+	5.1.5 connect
+	5.1.6 kmtrecv
+	5.1.7 kmtsend
+	5.1.8 logclose
+	5.1.9 logopen
+	5.1.10 logpause
+	5.1.11 logstart
+	5.1.12 logwrite
+	5.1.13 quickvanrecv
+	5.1.14 quickvansend
+	5.1.15 send
+	5.1.16 sendfile
+	5.1.17 sendln
+	5.1.18 showtt
+	5.1.19 wait
+	5.1.20 waitrecv
+	5.1.21 xmodemrecv
+	5.1.22 xmodemsend
+	5.1.23 zmodemrecv
+	5.1.24 zmodemsend
+
+5.2 Control commands
+
+	5.2.1 call
+	5.2.2 end
+	5.2.3 execcmnd
+	5.2.4 exit
+	5.2.5 for, next
+	5.2.6 goto
+	5.2.7 if, then, elseif, else, endif
+	5.2.8 include
+	5.2.9 pause
+	5.2.10 return
+	5.2.11 while, endwhile
+
+5.3 String operation commands
+
+	5.3.1 str2int
+	5.3.2 strcompare
+	5.3.3 strconcat
+	5.3.4 strcopy
+	5.3.5 strlen
+	5.3.6 strscan
+
+5.4 File operation commands
+
+	5.4.1 fileclose
+	5.4.2 fileconcat
+	5.4.3 filecopy
+	5.4.4 filecreate
+	5.4.5 filedelete
+	5.4.6 fileopen
+	5.4.7 filereadln
+	5.4.8 filerename
+	5.4.9 filesearch
+	5.4.10 fileseek
+	5.4.11 filestrseek
+	5.4.12 filewrite
+	5.4.13 filewriteln
+
+5.5 Miscellaneous commands
+
+	5.5.1 beep
+	5.5.2 exec
+	5.5.3 getdate
+	5.5.4 gettime
+	5.5.5 inputbox
+	5.5.6 int2str
+	5.5.7 messagebox
+	5.5.8 passwordbox
+	5.5.9  show
+	5.5.10 yesnobox
+
+...............................................................................
+5.1 Communication commands
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.1 bplusrecv
+
+Format:
+	bplusrecv
+
+Causes Tera Term to receive a file from the host with the B-Plus protocol.
+Pauses until the end of the file transfer.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.2 bplussend
+
+Format:
+	bplussend <filename>
+
+Causes Tera Term to send the file <filename> to the host with the B-Plus
+protocol. Pauses until the end of the file transfer.
+
+Example:
+	bplussend 'readme.txt'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.3 changedir
+
+Format:
+	changedir <path>
+
+Changes the current directory of Tera Term.
+
+Example:
+	changedir 'c:\'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.4 closett
+
+Format:
+	closett
+
+Closes Tera Term.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.5 connect
+
+Format:
+	connect <command line parameters>
+
+Runs Tera Term with <command line parameters>, and links it to TTMACRO.
+If the link has been already established by Tera Term or another "connect"
+command, the "connect" command is ignored. No other communication commands
+should be executed before the link is established.
+
+See CMNDLINE.TXT for the format of the <command line parameters>.
+
+Example:
+	connect ''			No command line parameter
+
+	connect '/C=2'			Run Tera Term with parameter '/C=2'.
+
+	connect 'foohost.foo.foo.jp'
+
+	CommandLine = '111.111.11.11'
+	connect CommandLine
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.6 kmtrecv
+
+Format:
+	kmtrecv
+
+Causes Tera Term to receive a file from the host with the Kermit protocol.
+Pauses until the end of the file transfer.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.7 kmtsend
+
+Format:
+	kmtsend <filename>
+
+Causes Tera Term to send the file <filename> to the host with the Kermit
+protocol. Pauses until the end of the file transfer.
+
+Example:
+	kmtsend 'readme.txt'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.8 logclose
+
+Format:
+	logclose
+
+Causes Tera Term to close the log file.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.9 logopen
+
+Format:
+	logopen <filename> <binary flag> <append flag>
+
+Causes Tera Term to start logging. Received characters are written to the file
+<filename>.
+
+If <binary flag> is zero, received new-line characters are converted (CR ->
+CR/CRLF) and escape sequences are stripped out. If <binary flag> is non-zero,
+received characters are written without first being converted.
+
+If <append flag> is non-zero and the file <filename> already exists, received
+characters are appended to it. If <append flag> is zero and the file <filename>
+already exists, the file is overwritten.
+
+Example:
+	logopen 'myhost.log' 0 0
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.10 logpause
+
+Format:
+	logpause
+
+Causes Tera Term to pause logging. Received characters are discarded while
+logging is paused.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.11 logstart
+
+Format:
+	logstart
+
+Causes Tera Term to restart the logging, if paused.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.12 logwrite
+
+Format:
+	logwrite <string>
+
+Appends a <string> to the log file of the Tera Term.
+
+This command is valid only while Tera Term is logging. The <string> can be
+written even while logging is paused.
+
+Example:
+	logwrite 'LOG FILE'#13#10
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.13 quickvanrecv
+
+Format:
+	quickvanrecv
+
+Causes Tera Term to receive a file from the host with the Quick-VAN protocol.
+Pauses until the end of the file transfer.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.14 quickvansend
+
+Format:
+	quickvansend <filename>
+
+Causes Tera Term to send the file <filename> to the host with the Quick-VAN
+protocol. Pauses until the end of the file transfer.
+
+Example:
+	quickvansend 'readme.txt'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.15 send
+
+Format:
+	send <data1> <data2> ....
+
+Causes Tera Term to send characters to the host.
+
+If <data> is a string, the string is sent to the host. If <data> is an
+integer, its low-order byte (0-255) is regarded as an ASCII code of the
+character, and the character is sent to the host.
+
+Example:
+	send 'ABC'
+
+	send  65 66 67		Send 'ABC'.
+				(ASCII code of the character "A" is 65.)
+
+	myname='Tera Term'
+	send 'My name is ' myname '.'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.16 sendfile
+
+Format:
+	sendfile <filename> <binary flag>
+
+Causes Tera Term to send the file <filename> to the host. Pauses until the end
+of the file transfer.
+
+If <binary flag> is non-zero, the file is sent without being converted. If
+<binary flag> is zero, new-line characters are converted (CR -> CR/CRLF) and
+control characters except TAB, LF, and CR are not sent.
+
+Example:
+	sendfile 'data.dat' 1
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.17 sendln
+
+Format:
+	sendln <data1> <data2> ....
+
+Causes Tera Term to send characters followed by a new-line character to the
+host.
+
+Format of <data> is the same as the "send" command (5.1.15).
+
+Example:
+	sendln			Only a new-line character is sent.
+
+	sendln 'abc'
+
+	Password='mypassword'
+	sendln Password
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.18 showtt
+
+Format:
+	showtt <show flag>
+
+Minimizes Tera Term if <show flag> is zero.
+Restores Tera Term if <show flag> is non-zero.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.19 wait
+
+Format:
+	wait <string1> <string2> ...
+
+Pauses until one of the strings is received from the host, or until the
+time-out occurs. Maximum number of the strings is 10.
+
+If the system variable "timeout" is greater than zero, the time-out occurs
+when <timeout> seconds have passed. If the "timeout" is less than or equal to
+zero, the time-out never occurs.
+
+The "wait" command returns the following values in the system variable
+"result":
+
+	Value		Meaning
+    -------------------------------------------------------
+	0		Time-out. No string has received.
+	1		<string1> has received.
+	2		<string2> has received.
+	.			.
+	.			.
+	.			.
+
+Example:
+	timeout = 30			The time-out limit is 30 sec.
+	wait 'OK' 'ERROR'		Wait until 'OK' or 'ERROR' has
+					received.
+	if result=0 goto timeout	If time-out, go to ':timeout'.
+	if result=1 goto ok		If 'OK' has received, go to ':ok'.
+	if result=2 goto error
+
+	wait #10'>' 'complete.'#13	Wait a line beginning with the ">" or
+					a line ending with the "complete.".
+					(ASCII code of LF is 10, and CR is 13.)
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.20 waitrecv
+
+Format:
+	waitrecv <sub-string> <len> <pos>
+
+Pauses until a string, which satisfies a condition, is received from
+the host, or until the time-out occurs.
+
+The condition is:
+	The length of the string is <len>, and the string contains
+	the <sub-string> beginning at the <pos>th character.
+
+For example, if <sub-string> is "def" and <len> is 9 and <pos> is 4,
+the string "abcdefghi" satisfies the condition.
+
+If such string is received, it is saved in the system variable "inputstr".
+
+If the system variable "timeout" is greater than zero, the time-out occurs
+when <timeout> seconds have passed. If the "timeout" is less than or equal
+to zero, the time-out never occurs.
+
+The "waitrecv" command returns the following values in the system variable
+"result":
+
+Value		Meaning
+----------------------------------------------------------------------------
+-1		A string, which contains the <sub-string> beginning at the
+		<pos>th character, has been received, and saved in the 
+		"inputstr", but its length is less than <len> because of
+		the time-out.
+
+0		Time-out. No string, which satisfies the condition, has
+		been received.
+
+1		A string, which satisfies the condition, has been received,
+		and saved in the "inputstr".
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.21 xmodemrecv
+
+Format:
+	xmodemrecv <filename> <binary flag> <option>
+
+Causes Tera Term to receive the file <filename> from the host with the XMODEM
+protocol. Pauses until the end of the file transfer.
+
+If the file is a binary file, <binary flag> must be non-zero. If the file is
+a text file, <binary flag> must be zero.
+
+<option> specifies the XMODEM option, and can be one of the following:
+
+	<option>	XMODEM option
+	--------------------------
+	1		Checksum
+	2		CRC
+	3		1K
+	others		Checksum
+
+Example:
+	xmodemrecv 'readme.txt' 0 2	XMODEM receive, text file, CRC
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.22 xmodemsend
+
+Format:
+	xmodemsend <filename> <option>
+
+Causes Tera Term to send the file <filename> to the host with the XMODEM
+protocol. Pauses until the end of the file transfer.
+
+<option> specifies the XMODEM option, and can be one of the following:
+
+	<option>	XMODEM option
+	--------------------------
+	1		Checksum
+	2		CRC
+	3		1K
+	others		Checksum
+
+Example:
+	xmodemsend 'readme.txt' 1	XMODEM send, checksum
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.23 zmodemrecv
+
+Format:
+	zmodemrecv
+
+Causes Tera Term to receive files from the host with the ZMODEM protocol.
+Pauses until the end of the file transfer.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.24 zmodemsend
+
+Format:
+	zmodemsend <filename> <binary flag>
+
+Causes Tera Term to send the file <filename> to the host with the ZMODEM
+protocol. Pauses until the end of the file transfer.
+
+If the file is a binary file, <binary flag> must be non-zero. If the file is
+a text file, <binary flag> must be zero.
+
+Example:
+	zmodem 'readme.txt' 0
+
+...............................................................................
+5.2 Control commands
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.1 call
+
+Format:
+	call <label>
+
+Calls a subroutine beginning with the <label> line.
+
+Example:
+	messagebox "I'm in main." "test"
+	call sub				Jump to ":sub".
+	messagebox "Now I'm in main" "test"
+	end
+
+	:sub					Start of the subroutine.
+	  messagebox "Now I'm in sub" "test"
+	  return				Go back to the main routine.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.2 end
+
+Format:
+	end
+
+Quits the execution of the macro. TTMACRO is also closed.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.3 execcmnd
+
+Format:
+	execcmnd <statement>
+
+Executes a TTL statement expressed by the string <statement>.
+
+Example:
+	execcmnd "send 'abc'"		Execute the statement "send 'abc'".
+
+	execcmnd "a=1"
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.4 exit
+
+Format:
+	exit
+
+Exits the include file and returns to the main file.
+
+Example:	See 5.2.8.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.5 for, next
+
+Format:
+	for <intvar> <first> <last>
+	  ...
+	  ...
+	next
+
+Repeats the statements between "for" and "next" until the integer variable
+<intvar> has the value <last> at the 'next' statement.
+
+The initial value of the <intvar> is <first>. If <last> is greater than
+<first>, <intvar> is incremented by 1 at the 'next' line. If <last> is less
+than <first>, <intvar> is decremented by 1 at the 'next' line.
+
+Example:
+	for i 1 10		Repeat ten times.
+	  sendln 'abc'
+	next
+
+	for i 5 1		Repeat five times.
+	  sendln 'abc'
+	next
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.6 goto
+
+Format:
+	goto <label>
+
+Moves control to the next line of the <label>.
+
+Example:
+	goto label		Jump to the next line of the ':label'.
+	...
+	...
+	...
+	:label
+	send 'abc'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.7 if, then, elseif, else, endif
+
+1) Format:
+	if <int> <statement>
+
+Executes a <statement>, if <int> is non-zero.
+
+Example:
+	if A>1 goto label		If A>1, jump to ':label'.
+
+	if result A=0			If result<>0, assign 0 to A.
+
+2) Format:
+	if <int 1> then
+	  ...
+	  (Statements for the case:  <int 1> is true (non-zero).)
+	  ...
+	[elseif <int 2>]
+	  ...
+	  (Statements for the case:  <int 1> is false (zero) and
+	   <int 2> is true.)
+	  ...
+	  ...
+	[elseif <int N>]
+	  ...
+	  (Statements for the case:  <int 1>, <int 2>,.., and
+	   <int N-1> are all false, and <int N> is true.)
+	  ...
+	[else]
+	  ...
+	  (Statements for the case:  all the conditions above
+	   are false (zero).)
+	  ...
+	endif
+
+'if' statement must end with 'then'.
+'elseif' and 'else' can be omitted.
+'then' and 'endif' can not be omitted.
+
+Examples:
+	if a=1 then
+	  b = 1
+	  c = 2
+	  d = 3
+	endif
+
+	if i<0 then
+	  i=0
+	else
+	  i=i+1
+	endif
+
+	if i=1 then
+	  c = '1'
+	elseif i=2
+	  c = '2'
+	elseif i=3
+	  c = '3'
+	else
+	  c = '?'
+	endif
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.8 include
+
+Format:
+	include <include file name>
+
+Moves control to the include file.
+
+Example:
+	----- main file 'main.ttl' ------
+	i=10
+	:loop
+	include 'sub.ttl'		Move to the include file.
+	if i>=0 goto loop
+	end
+	---------------------------------
+
+	----- include file 'sub.ttl' ----
+	if i<0 then
+	  messagebox 'error!' 'sub'
+	  exit				Go back to the main file.
+	endif
+	i = i - 1
+	----- End of 'sub.ttl' ----------	Go back to the main file.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.9 pause
+
+Format:
+	pause <time>
+
+Pauses for <time> seconds.
+
+Example:
+
+	pause 10	Pause for 10 seconds.
+
+	pause Time
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.10 return
+
+Format:
+	return
+
+Exits the subroutine and returns to the main routine.
+
+Example: See 5.2.1.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.11 while, endwhile
+
+Format:
+	while <int>
+	  ...
+	  ...
+	  ...
+	endwhile
+
+Repeats the statements between 'while' and 'endwhile' while <int> is non-zero.
+
+Examples:
+	i = 10
+	while i>0
+	  i = i - 1	Repeat ten times.
+	endwhile
+
+...............................................................................
+5.3 String operation commands
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.3.1 str2int
+
+Format:
+	str2int <intvar> <string>
+
+Converts the <string> which represents a decimal number to its numeric value.
+The value is returned in the integer variable <intvar>. If the string is
+converted successfully, the system variable "result" is set to 1. Otherwise,
+"result" is set to zero.
+
+Example:
+	str2int val '123'		val=123, result=1
+
+	str2int val '123abc'		result=0
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.3.2 strcompare
+
+Format:
+	strcompare <string1> <string2>
+
+Compares two strings. Depending on the relation between them, one of the
+following result code is returned in the system variable "result":
+
+	Relation		result
+  ---------------------------------------
+  <string1> < <string2>		 -1
+  <string1> = <string2>		  0
+  <string1> > <string2>		  1
+
+Example:
+	strcompare 'abc' 'def'		result = -1
+
+	strcompare command 'next'
+	if result=0 goto label
+	strcompare command 'end'
+	if result=0 end
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.3.3 strconcat
+
+Format:
+	strconcat <strvar> <string>
+
+Appends a copy of <string> to the end of the string variable <strvar>.
+
+Example:
+	filename = 'c:\teraterm\'
+	strconcat filename 'test.txt'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.3.4 strcopy
+
+Format:
+	strcopy <string> <pos> <len> <strvar>
+
+Copies a substring of <string> to the string variable <strvar>.
+The substring begings at the <pos>th character in <string>, and its length
+is <len>.
+
+Example:
+	strcopy 'tera term' 6 4 substr		substr='term'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.3.5 strlen
+
+Format:
+	strlen <string>
+
+Returns the length of <string> in the system variable "result".
+
+Example:
+	strlen 'abc'			result = 3
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.3.6 strscan
+
+Format:
+	strscan <string> <substring>
+
+Searches for <substring> in <string>.
+If <substring> is found, its position is returned in the system variable
+"result". If <string> contains more than one occurrence of <substring>,
+the position of the first one is returned. If <substring> is not found,
+"result" is set to zero.
+
+Example:
+	strscan 'tera term' 'term'		result = 6
+
+...............................................................................
+5.4 File operation commands
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.1 fileclose
+
+Format:
+	fileclose <file handle>
+
+Closes the file specified by <file handle>.
+<file handle> is no longer valid after this command.
+
+Example:
+	fileclose fhandle
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.2 fileconcat
+
+Format:
+	fileconcat <file1> <file2>
+
+Appends a copy of file <file2> to the end of file <file1>.
+<file1> and <file2> must not be same.
+
+Example:
+	fileconcat 'test.dat' test2.dat'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.3 filecopy
+
+Format:
+	filecopy <file1> <file2>
+
+Copies file <file1> to file <file2>.
+If <file2> already exists, it is overwritten. <file1> and <file2> must not
+be same.
+
+Example:
+	filecopy 'test.dat' test2.dat'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.4 filecreate
+
+Format:
+	filecreate <file handle> <filename>
+
+Creates and opens a new file specified by <filename>.
+The file pointer is set to the beginning of the file. If file <filename>
+already exists, its size is truncated to zero. If the file is successfully
+created and opened, the file handle is returned in the integer variable
+<file handle>. Otherwise, <file handle> is set to -1.
+
+Example:
+	filecreate fhandle 'data.dat'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.5 filedelete
+
+Format:
+	filedelete <filename>
+
+Deletes the file specified by <filename>.
+
+Example:
+	filedelete 'temp.log'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.6 fileopen
+
+Format:
+	fileopen <file handle> <file name> <append flag>
+
+Opens a file specified by <file name>.
+
+If the file does not exist, it is created and then opened. If the file is
+successfully opened, the file handle is returned in the integer variable
+<file handle>. Otherwise, <file handle> is set to -1.
+
+If <append flag> is zero, the file pointer is set to the beginning of the
+file. If <append flag> is non-zero, the file pointer is set to the end of
+the file.
+
+Example:
+	fileopen fhandle 'data.dat' 0
+
+	fileopen fhandle 'data.dat' 1
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.7 filereadln
+
+Format:
+	filereadln <file handle> <strvar>
+
+Reads a line from the file specified by <file handle>.
+The line is written into the string variable <strvar>. The file pointer
+is moved to the beginning of the next line. If the file pointer reaches the
+end of the file while reading the line, the system variable "result" is set
+to 1. Otherwise, "result" is set to zero.
+
+Example:
+	fileopen fhandle 'test.txt' 0	Open a file.
+	:loop
+	filereadln fhandle line		Read a line from the file.
+	if result goto fclose
+	messagebox line 'test.txt'	Display the line.
+	goto loop			Repeat until the end of the file.
+	:fclose
+	fileclose fhandle		Close the file.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.8 filerename
+
+Format:
+	filerename <file1> <file2>
+
+Renames <file1> to <file2>.
+<file1> and <file2> must not be same.
+
+Example:
+	filerename 'test.dat' test2.dat'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.9 filesearch
+
+Format:
+	filesearch <filename>
+
+Searches for the file specified by <filename>.
+If it is found, the system variable "result" is set to 1. Otherwise,
+"result" is set to zero.
+
+Example:
+	filesearch 'readme.txt'
+	if result=0 messagebox 'File not found.' 'error'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.10 fileseek
+
+Format:
+	fileseek <file handle> <offset> <origin>
+
+Moves the pointer for the file specified by <file handle>.
+With this command, the file pointer is moved <offset> bytes from:
+
+	the beginning of the file, if <origin> is 0.
+
+	the current position, if <origin> is 1.
+
+	the end of the file, if <offset> is 2.
+
+Example:
+	fileseek fhandle 0 0	Move to the beginning of the file.
+
+	fileseek fhandle 10 1	Move 10 bytes from the current position.
+
+	fileseek fhandle 0 2	Move to the end of the file.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.11 filestrseek
+
+Format:
+	filestrseek <file handle> <string>
+
+Searches for <string> in the file specified by <file handle>.
+The search is started from the current position of the file pointer.
+
+If <string> is found, the file pointer is moved to the next character of
+the string, and the system variable "result" is set to 1. If <string> is
+not found, the file pointer is not moved, and "result" is set to zero.
+
+Example:
+	fileopen fhandle 'teraterm.log' 0	Search for the string 'abc'
+	filestrseek fhandle 'abc'		in the file 'teraterm.log'.
+	if result=0 goto not_found
+	filereadln fhandle str			Read characters from the next
+						of the 'abc' to the end of the
+						line.
+	:not_found
+	fileclose fhandle
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.12 filewrite
+
+Format:
+	filewrite <file handle> <string>
+
+Writes <string> to the file specified by <file handle>.
+
+Example:
+	filewrite fhandle '---------cut here---------'#13#10
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.13 filewriteln
+
+Format:
+	filewriteln <file handle> <string>
+
+Writes <string> and the new-line characters (CR+LF) to the file specified
+by <file handle>.
+
+Example:
+	filewriteln fhandle '---------cut here---------'
+
+...............................................................................
+5.5 Miscellaneous commands
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.1 beep
+
+Format:
+	beep
+
+Makes a beep sound.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.2 exec
+
+Format:
+	exec <command line>
+
+Runs an application specified by <command line>.
+
+Format:
+	exec 'notepad readme.txt'	Run "Notepad".
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.3 getdate
+
+Format:
+	getdate <strvar>
+
+Returns the current date in the string variable <strvar>, with the format
+"YYYY-MM-DD".
+
+Example:
+	getdate datestr
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.4 gettime
+
+Format:
+	gettime <strvar>
+
+Returns the current time in the string variable <strvar>, with the format
+"HH:MM:SS".
+
+Example:
+	gettime timestr
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.5 inputbox
+
+Format:
+	inputbox <message> <title>
+
+Displays a dialog box prompting user to input a string.
+
+The <message> is displayed in the dialog box. The <title> is displayed as the
+dialog box title. The string entered by the user is returned in the system
+variable "inputstr".
+
+Example:
+	inputbox 'Password:' 'Login'
+	sendln inputstr
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.6 int2str
+
+Format:
+	int2str <strvar> <integer value>
+
+Converts <integer value> to its string expression, and returns it in the
+string variable <strvar>.
+
+Example:
+	int2str valstr 123		The string "123" is assigned to
+					the variable 'valstr'.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.7 messagebox
+
+Format:
+	messagebox <message> <title>
+
+Displays a dialog box with <message> and <title>.
+
+Example:
+	messagebox ErrorMessage 'Error'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.8 passwordbox
+
+Format:
+	passwordbox <message> <title>
+
+Displays a dialog box prompting the user to input a password.
+
+The <message> is displayed in the dialog box. The <title> is displayed as the
+dialog box title. The password typed by the user is not displayed as is.
+Instead, asterisks are displayed. The password is returned in the system
+variable "inputstr".
+
+Example:
+	passwordbox 'Enter password' 'Login'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.9 show
+
+Format:
+	show <show flag>
+
+Minimizes TTMACRO, if <show flag> is zero.
+Restores TTMACRO, if <show flag> is non-zero.
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.10 yesnobox
+
+Format:
+	yesnobox <message> <title>
+
+Displays a dialog box with the <message>, the <title>, a "Yes" button, and a
+"No" button.
+
+If the user clicks on the "Yes" button, the system variable "result" is set
+to 1.  If the user clicks on the "No" button, "result" is set to zero.
+
+Example:
+	yesnobox 'Try agian?' 'Tera Term'
+	if result goto retry
+	end
+
+-------------------------------------------------------------------------------
+ 6. Appendixes
+
+...............................................................................
+Appendix A	Error messages
+
+ Error message				Meaning
+ ----------------------------------------------------------------------------
+ Can't call sub.		Cannot call the subroutine, the subroutine
+				is located in a different file.
+
+ Can't link macro.		Failure to establish the connection between
+				TTMACRO and Tera Term.
+
+ Can't open file.		The include file does not exist, or there are
+				too many nested include files.
+
+ ")" expected.			A closing parenthesis does not exist where
+				it should.
+
+ Link macro first.		The command cannot be executed before the
+				connection between TTMACRO and Tera Term is
+				established.
+
+ Divide by zero.		The expression attempts to divide by zero.
+
+ Invalid control.		Invalid use of "else", "elseif", or "endif".
+
+ Label already defined.		Duplicate use of the label.
+
+ Label required.		The label is not defined.
+
+ Stack overflow.		There are too many nested subroutines,
+				"for-next" loops, or "while-endwhile" loops.
+
+ Syntax error.			The format of the statement is invalid.
+
+ Too many labels.		TTMACRO cannot handle more than 256 labels.
+
+ Too many variables.		TTMACRO cannot handle more than 128 integer
+				variables and 128 string variables.
+
+ Type mismatch.			The type of the constant or the variable is
+				invalid.
+
+ Variable not initialized.	The variable must be initialized before it is
+				referenced.
+
+...............................................................................
+Appendix B	About new-line characters
+
+New-line characters (CR or CR+LF) received from the host are converted to
+CR+LF pairs by Tera Term, and then Tera Term sends them to TTMACRO.
+
+You should use the pair (CR+LF) as a new-line character to send to Tera Term.
+
+ASCII code 13 (decimal) is for the CR, and 10 is for the LF.
+
+Example:
+  send 'abc'#13#10		Same as the statement "sendln 'abc'". The
+				actual new-line character to be sent to the
+				host is determined by Tera Term.
+
+  wait #10'abc' 'def'#13	Waits for a line beginning with "abc",
+				or a line ending with 'def'.
+
+  logwrite 'abc'#13#10		Writes line "abc" to the log file.
+
+...............................................................................
+
+-------------------------------------------------------------------------------

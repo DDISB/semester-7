@@ -1,0 +1,1438 @@
+	TTMACRO for Tera Term
+	T. Teranishi
+
+	Copyright (C) 1994-1996 T. Teranishi
+	All Rights Reserved.
+
+-------------------------------------------------------------------------------
+目次
+
+1. 概要
+
+2. インストール
+
+3. マクロ実行法
+
+4. マクロ言語 "Tera Term Language (TTL)"
+
+  4.1 データ型
+  4.2 定数の形式
+  4.3 名前の形式
+  4.4 変数
+  4.5 式と演算子
+  4.6 行の形式
+
+5. TTL コマンドリファレンス
+
+  5.1 通信コマンド  
+  5.2 制御コマンド
+  5.3 文字列操作コマンド
+  5.4 ファイル操作コマンド
+  5.5 その他のコマンド
+
+6. 補足説明
+  エラーメッセージ
+  改行文字について	
+
+-------------------------------------------------------------------------------
+1. 概要
+
+TTMACRO は Tera Term 用マクロ実行プログラムです。マクロ言語
+"Tera Term Language (TTL)" によって、 Tera Term を制御し、オートダイアル、
+オートログインなどの機能を実現することができます。
+
+注: TTMACRO.EXE は 16-bit 実行ファイルです。長いマクロファイル名には対応
+    していません。
+-------------------------------------------------------------------------------
+2. インストール
+
+TTMACRO.EXE を TERA TERM がインストールされているディレクトリ(フォルダ)
+に置いてください。
+
+-------------------------------------------------------------------------------
+3. マクロ実行法
+
+マクロファイルを実行するには、2通りの方法があります。
+
+1) Tera Term からマクロを実行する。
+
+Tera Term の [Control] Macro コマンドを実行してください。すると、 TTMACRO
+が起動し、マクロファイル (*.TTL) を選択するダイアログボックスが現れるので、
+実行したいマクロファイルを選択してください。
+
+2) TTMACRO を直接起動し、マクロを実行する。 (Tera Term はマクロから起動。)
+
+TTMACRO を起動するときのコマンドライン(ショートカットのリンク先)で
+マクロファイル名を指定することができます。例えばマクロファイル "DIALUP.TTL"
+を実行したい場合、コマンドライン(ショートカットのリンク先)は、
+
+	TTMACRO DIALUP.TTL
+
+と指定してください。マクロファイル名の拡張子 ".TTL" は省略可能です。マクロ
+ファイル名を省略すると、TTMACRO 起動後にマクロファイルを選択するダイアログ
+ボックスが現れます。よく使用するマクロは、アイコン(ショートカット)を作成
+しておくと便利です。
+
+方法 2) で、TTMACRO を起動した場合、マクロコマンド connect によって、
+Tera Term を起動することができます。 Connect コマンドの説明は 5.1.5 を読んで
+ください。
+
+マクロ実行中は、「TTMACRO - <マクロファイル名>」というアイコンまたはダイアログ
+ボックスがあらわれます。ダイアログボックスの「Pause」/「Start」/「End]ボタンを
+押すとマクロを停止/再開/終了することができます。
+
+-------------------------------------------------------------------------------
+4. マクロ言語 "Tera Term Language (TTL)"
+
+TTL は BASIC に似た単純なインタープリタ型の言語です。
+はやく覚えるには、配布パッケージに含まれるマクロファイルのサンプルを参考に
+し、「5. TTL コマンドリファレンス」を読んで下さい。
+
+...............................................................................
+4.1 データ型
+
+TTL が扱えるデータの型は2種類。
+
+	整数
+		符号付き 16 bit, -32768から32767まで。
+
+	文字列
+		NUL 文字を除くすべての文字を含むことができる。
+		最大長は255文字。
+...............................................................................
+4.2 定数の形式
+
+1) 整数型定数
+
+	10進数で表現する。
+
+	例:
+		123
+		-11
+
+2) 文字列型定数
+
+	文字列型定数を表現する方法は2つ。
+
+	a) 値となる文字列の両端を ' か " で囲む(両端とも同じ文字で)。
+	   文字列値を構成する文字は表示可能で囲み文字と異なる文字ならば
+	   何でもよい。
+
+	例:
+		'Hello, world!'
+		"I can't do that."
+		"漢字も可能"
+
+	b) 1文字を ASCII (または JIS ローマ字、Shift-JIS) コード(10進数)
+	   で表現し、先頭に "$" をつける。ASCII コード 0 の文字 (NUL) は
+	   文字列定数に含めることができない。
+
+	例:
+		#65		文字 "A"
+		#13		CR 文字
+
+  	a) と b) は組み合わせることが可能。
+
+	例:
+		'cat readme.txt'#13#10		普通の文字列+改行
+		abc'#13#10'def'#13#10'ghi'
+
+...............................................................................
+4.3 名前の形式
+
+1) 変数の名前
+
+1文字目は、アルファベット (A-Z, a-z) か "_"、2文字目以降はアルファベットか "_"
+か数字 (0-9)。アルファベットの大文字と小文字は区別されない。最大長は32文字。
+
+	例:
+		send
+		VARIABLE1
+		_flag
+
+2) ラベルの名前
+
+アルファベット (A-Z, a-z) か "_" か数字 (0-9) で構成される。最大長は32文字。
+
+	例:
+		label1
+		100
+
+3) 予約語
+
+以下に示す名前は、コマンドや演算子、システム変数として使われる。ユーザーが
+定義する変数やラベルの名前として使うことはできない。
+
+コマンド:
+	beep, bplusrecv, bplussend, ... (5. のコマンドリストを参照)
+
+演算子:
+	and, not, or, xor
+
+システム変数:
+	inputstr, param2, param3, result, timeout
+
+...............................................................................
+4.4 変数
+
+1) ユーザー変数
+
+ユーザーにより定義される。型および値は初めて値が代入されたときに決まる。
+いったん型が決まると違う型の値を代入することはできない。
+
+2) システム変数
+
+あらかじめ型と値が定義され、特定のコマンドと共に使用される。
+
+名前		型	初期値	システム変数を使用するコマンド
+-----------------------------------------------------------------
+inputstr	文字列	""	inputbox, passwordbox, waitrecv
+param2		文字列	*1	*1
+param3		文字列	*1	*1
+result		整数	0	filereadln, filesearch, filestrseek,
+				str2int, strcompare, strlen, strscan,
+				wait, waitrecv, yesnobox
+timeout		整数	0	wait, waitrecv
+
+	*1 TTMACRO 起動時のコマンドラインパラメータの2, 3番目が
+	   システム変数 param2, param3 の初期値となる。1番目の文字列は
+	   マクロファイル名。
+
+...............................................................................
+4.5 式と演算子
+
+式は、定数、変数、演算子、カッコで表現する。定数と変数は整数型のみ。結果も
+整数型。関係演算子を用いた式の結果の値は、真のとき1、偽のとき0となる。
+
+演算子の優先順位による分類は以下のとおり
+
+種類		優先順位	演算子
+------------------------------------------------------------
+単項演算子	1, 最高		not
+乗除演算子	2		*  /
+加減演算子	3		+  -  or  xor
+関係演算子	4, 最低		=  <>  <  >  <=  >=
+
+例:
+	1 + 1
+	4 - 2 * 3	この式の値は-2
+	3 * (A + 2)	Aは整数型の変数
+	A and not B
+	A <= B		A, Bは整数型の変数。結果の値は真のとき1、偽のとき0
+
+...............................................................................
+4.6 行の形式
+
+行の形式は以下の5つに分類できる。
+
+1) 空白行
+
+文字がない行や空白文字 (space または tab) だけの行は無視され、TTL の実行
+結果に影響をあたえない。
+
+2) コメント行
+
+";" で始まる行。TTL の実行結果に影響を与えない。
+
+	例:
+		; Tera Term Language
+
+3) コマンド行
+
+1つのコマンド名と0個以上のパラメータ。(if コマンドは例外。5.2.7 参照)。
+
+	形式:
+		<コマンド> <パラメータ> ...
+	例:
+		connect'myhost'
+		wait 'OK' 'ERROR'
+		if result=2 goto error
+		sendln 'cat'
+		pause  A*10
+		end
+
+4) 代入行
+
+変数に値を代入する。
+ 
+	形式:
+		<変数>  = <定数、変数、式>
+	例:
+	A = 33		数値の代入
+	B = C		C はすでに値が代入されてなければならない。
+	VAL = I*(I+1)
+	A=B=C		B=C の結果 (真:1、偽:0) がAに代入される。
+	Error=0<J
+	UserName='MYNAME'	文字列の代入
+  
+5) ラベル行
+
+":" とその直後に続くラベル名からなる。
+
+	形式:
+		:<label name>
+	例:
+		:dial
+		:300
+
+-------------------------------------------------------------------------------
+5. TTL コマンドリファレンス
+
+コマンドの分類
+
+5.1 通信コマンド
+
+	5.1.1 bplusrecv
+	5.1.2 bplussend
+	5.1.3 changedir
+	5.1.4 closett
+	5.1.5 connect
+	5.1.6 kmtrecv
+	5.1.7 kmtsend
+	5.1.8 logclose
+	5.1.9 logopen
+	5.1.10 logpause
+	5.1.11 logstart
+	5.1.12 logwrite
+	5.1.13 quickvanrecv
+	5.1.14 quickvansend
+	5.1.15 send
+	5.1.16 sendfile
+	5.1.17 sendln
+	5.1.18 showtt
+	5.1.19 wait
+	5.1.20 waitrecv
+	5.1.21 xmodemrecv
+	5.1.22 xmodemsend
+	5.1.23 zmodemrecv
+	5.1.24 zmodemsend
+
+5.2 制御コマンド
+
+	5.2.1 call
+	5.2.2 end
+	5.2.3 execcmnd
+	5.2.4 exit
+	5.2.5 for, next
+	5.2.6 goto
+	5.2.7 if, then, elseif, else, endif
+	5.2.8 include
+	5.2.9 pause
+	5.2.10 return
+	5.2.11 while, endwhile
+
+5.3 文字列操作コマンド
+
+	5.3.1 str2int
+	5.3.2 strcompare
+	5.3.3 strconcat
+	5.3.4 strcopy
+	5.3.5 strlen
+	5.3.6 strscan
+
+5.4 ファイル操作コマンド
+
+	5.4.1 fileclose
+	5.4.2 fileconcat
+	5.4.3 filecopy
+	5.4.4 filecreate
+	5.4.5 filedelete
+	5.4.6 fileopen
+	5.4.7 filereadln
+	5.4.8 filerename
+	5.4.9 filesearch
+	5.4.10 fileseek
+	5.4.11 filestrseek
+	5.4.12 filewrite
+	5.4.13 filewriteln
+
+5.5 その他のコマンド
+
+	5.5.1 beep
+	5.5.2 exec
+	5.5.3 getdate
+	5.5.4 gettime
+	5.5.5 inputbox
+	5.5.6 int2str
+	5.5.7 messagebox
+	5.5.8 passwordbox
+	5.5.9  show
+	5.5.10 yesnobox
+
+...............................................................................
+5.1 通信コマンド
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.1 bplusrecv
+
+形式:
+	bplusrecv
+
+B-Plus プロトコルでファイルを受信する。
+受信が終わるまで次のコマンドは実行されない。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.2 bplussend
+
+形式:
+	bplussend <filename>
+
+ファイル <filename> を B-Plus プロトコルで送信する。
+送信が終わるまで次のコマンドは実行されない。
+
+例:
+	bplussend 'readme.txt'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.3 changedir
+
+形式:
+	changedir <path>
+
+Tera Term の現在のディレクトリを変更する。
+
+例:
+	changedir 'c:\'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.4 closett
+
+形式:
+	closett
+
+Tera Term を終了させる。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.5 connect
+
+形式:
+	connect <command line parameters>
+
+Tera Term を起動して TTMACRO と接続する。<command line parameters> は、
+Tera Term を起動する時のコマンドラインパラメータ。Tera Term から TTMACRO
+を起動したり、すでに他の connect コマンドが実行されている場合、このコマンド
+は無視される。Tera Term との接続が確立する前に、他の通信コマンドは実行でき
+ない。
+
+Tera Termのコマンドラインパラメータについては、配布パッケージの
+CMNDLINE.TXT を参照。
+
+例:
+	connect	''		パラメータなしで Tera Term を起動
+
+	connect '/C=2'		パラメータ '/C=2'をつけて Tera Term を起動
+
+	connect 'foohost.foo.foo.jp'
+
+	CommandLine = '111.111.11.11'
+	connect CommandLine
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.6 kmtrecv
+
+形式:
+	kmtrecv
+
+Kermit プロトコルでファイルを受信する。
+受信が終わるまで次のコマンドは実行されない。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.7 kmtsend
+
+形式:
+	kmtsend <filename>
+
+ファイル <filename> を Kermit プロトコルで送信する。
+送信が終わるまで次のコマンドは実行されない。
+
+例:
+	kmtsend 'readme.txt'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.8 logclose
+
+形式:
+	logclose
+
+Tera Term のログを終了する。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.9 logopen
+
+形式:
+	logopen <filename> <binary flag> <append flag>
+
+Tera Term のログを開始する。ファイル <filename> に受信した文字が
+書き込まれる。ログを開始したあとも次のコマンドは実行される。
+
+<binary flag> の値が0のとき、受信した漢字、改行文字は変換されてファイルに
+書き込まれ、エスケープシーケンスは書き込まれない。<binary flag> の値が0以外
+のとき、受信した文字をすべてそのままファイルに書き込む。
+
+<append flag> の値が0以外で、ファイル <filename> がすでに存在する場合、
+そのファイルに追加して書き込む。
+<append flag> の値が0で、ファイル <filename> がすでに存在する場合、
+そのファイルは上書きされる。
+
+例:
+	logopen 'myhost.log' 0 0
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.10 logpause
+
+形式:
+	logpause
+
+Tera Term のログを一時中断する。中断してる間に受信された文字はログファイル
+に書き込まれない。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.11 logstart
+
+形式:
+	logstart
+
+中断していた Tera Term のログを再開する。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.12 logwrite
+
+形式:
+	logwrite <string>
+
+文字列 <string> を Tera Term のログファイルに追加して書き込む。
+
+このコマンドは Tera Term がログを取っている時だけ有効。ログを一時中断
+している時でも書き込むことができる。
+
+例:
+	logwrite 'LOG FILE'#13#10
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.13 quickvanrecv
+
+形式:
+	quickvanrecv
+
+Quick-VAN プロトコルでファイルを受信する。
+受信が終わるまで次のコマンドは実行されない。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.14 quickvansend
+
+形式:
+	quickvansend <filename>
+
+ファイル <filename> を Quick-VAN プロトコルで送信する。
+送信が終わるまで次のコマンドは実行されない。
+
+例:
+	quickvansend 'readme.txt'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.15 send
+
+形式:
+	send <data1> <data2> ....
+
+<data> が文字列型の場合、文字列をホストへ送信させる。
+<data> が整数型の場合は、その値の下位バイト(0-255)を ASCII コードと
+みなし、その文字を送信させる。
+
+例:
+	send 'ABC'
+
+	send  65 66 67		'ABC' を送信させる。('A' の ASCII コードは65)
+
+	myname='Tera Term'
+	send 'My name is ' myname '.'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.16 sendfile
+
+形式:
+	sendfile <filename> <binary flag>
+
+ファイルを送信する。送信が終わるまで次のコマンドは実行されない。
+
+<binary flag> の値が0以外のとき、ファイルの内容をそのまま送信する。
+<binary flag> の値が0のとき、ファイルの中に含まれる漢字、改行文字を変換
+して送信する。TAB ($09), LF ($0A), CR ($0D) 以外の制御文字は送信されない。
+
+例:
+	sendfile 'data.dat' 1
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.17 sendln
+
+形式:
+	sendln <data1> <data2> ....
+
+文字列とそれに続く改行文字をホストへ送信させる。
+<data> の形式は、 "send" コマンド (5.1.15) と同じ。
+
+例:
+	sendln			改行文字だけ送信
+
+	sendln 'abc'
+
+	Password='mypassword'
+	sendln Password
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.18 showtt
+
+形式:
+	showtt <show flag>
+
+<show flag> が0の場合、 Tera Term を最小化する。
+<show flag> が0以外の場合、 Tera Term を元の大きさに戻す。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.19 wait
+
+形式:
+	wait <string1> <string2> ...
+
+文字列 <string> がホストから送られてくるか、タイムアウトが起こるまで
+TTL の実行を休止する。<string> は最大10個まで指定できる。
+
+システム変数 timeout が0より大きい場合、<timeout> 秒の時間がすぎると
+タイムアウトが起こる。 timeout の値が0以下の場合は、タイムアウトは
+ない。
+
+このコマンドの実行結果はシステム変数 result に格納される。
+変数 result の値の意味は、
+
+  値		意味
+--------------------------------------------
+   0		タイムアウト。どの文字列も来なかった。
+   1		<string1> が来た。
+   2		<string2> が来た。
+   .			.
+   .			.
+   .			.
+
+例:
+	timeout = 30			タイムアウトを30秒に設定。
+	wait 'OK' 'ERROR'		文字列 'OK か 'ERROR' を待つ。
+	if result=0 goto timeout	タイムアウトなら、:timeout へジャンプ。
+	if result=1 goto ok		'OK' が来たなら、:ok へジャンプ
+	if result=2 goto error		'ERROR' が来たなら、:error へジャンプ
+
+	wait #10'>' 'complete.'#13	行先頭の '>' か、行末の 'complete.' を
+					待つ。(ASCII コード10, 13は LF, CR)
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.20 waitrecv
+
+形式:
+	waitrecv <sub-string> <len> <pos>
+
+ある条件を満たす1つの文字列がホストから送られてくるか、タイムアウトが
+起こるまで、TTL の実行を休止する。
+
+その条件とは、文字列の長さが <len> 文字で、 文字列がその <pos> 文字目から
+始まる副文字列 <sub-string> を含んでいるということ。
+
+例えば、<sub-string> が "def"、<len> が9、<pos> が4のとき、
+文字列 "abcdefghi" は条件を満たす。
+
+もし条件を満たす文字列が送られてきたら、システム変数 inputstr に保存される。
+
+システム変数 timeout が0より大きい場合、その値の秒数の時間がすぎると
+タイムアウトが起きる。 timeout の値が0以下の場合は、タイムアウトは
+ない。
+
+このコマンドの実行結果はシステム変数 result に格納される。
+変数 result の値の意味は、
+
+値		意味
+----------------------------------------------------------------------------
+-1		<pos> 文字目から始まる <sub-string> を含む文字列が来て、
+		inputstr に保存された。しかし文字列の長さは、タイムアウト
+		のために <len> 文字より短い。
+
+0		タイムアウト。条件を満たす文字列は送られてこなかった。
+
+1		条件をみたす文字列が来て、 inputstr に保存された。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.21 xmodemrecv
+
+形式:
+	xmodemrecv <filename> <binary flag> <option>
+
+XMODEM プロトコルでファイル <filename> を受信する。
+受信が終わるまで次のコマンドは実行されない。
+
+ファイルがバイナリファイルの場合は、<binary flag> は0以外でなければならない。
+テキストファイルの場合は、<binary flag> は0でなければならない。
+
+<option> によって、XMODEM のオプションを指定する。
+
+	<option>	XMODEM option
+	--------------------------
+	1		Checksum
+	2		CRC
+	3		1K
+	それ以外	Checksum
+
+例:
+	xmodemrecv 'readme.txt' 0 2	XMODEM receive, Text file, CRC
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.22 xmodemsend
+
+形式:
+	xmodemsend <filename> <option>
+
+XMODEM プロトコルでファイル <filename> を送信する。
+送信が終わるまで次のコマンドは実行されない。
+
+<option> によって、XMODEM のオプションを指定する。
+
+	<option>	XMODEM option
+	--------------------------
+	1		Checksum
+	2		CRC
+	3		1K
+	それ以外	Checksum
+
+例:
+	xmodemsend 'readme.txt' 1		XMODEM send, checksum
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.23 zmodemrecv
+
+形式:
+	zmodemrecv
+
+ZMODEM プロトコルでファイルを受信する。
+受信が終わるまで次のコマンドは実行されない。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.1.24 zmodemsend
+
+形式:
+	zmodemsend <filename> <binary flag>
+
+ファイル <filename> を ZMODEM プロトコルで送信する。
+送信が終わるまで次のコマンドは実行されない。
+
+ファイルがバイナリファイルの場合は、<binary flag> は0以外でなければならない。
+テキストファイルの場合は、<binary flag> は0でなければならない。
+
+例:
+	zmodem 'readme.txt' 0
+
+...............................................................................
+5.2 制御コマンド
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.1 call
+
+形式:
+	call <label>
+
+<label> 行から始まるサブルーチンをコールする。
+
+例:
+	messagebox "I'm in main." "test"
+	call sub				":sub" へ飛ぶ。
+	messagebox "Now I'm in main" "test"
+	end
+
+	:sub					サブルーチンの始まり。
+	  messagebox "Now I'm in sub" "test"
+	  return				メインルーチンへもどる。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.2 end
+
+形式:
+	end
+
+TTL の実行を終了する。TTMACRO も終了する。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.3 execcmnd
+
+形式:
+	execcmnd <statement>
+
+文字列 <statement> が表現する TTL コマンド を実行する。
+
+例:
+	execcmnd "send 'abc'"		コマンド "send 'abc'" を実行。
+
+	execcmnd "a=1"
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.4 exit
+
+形式:
+	exit
+
+インクルードファイルから抜け、メインファイルへ戻る。
+
+例:	5.2.8 を参照。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.5 for, next
+
+形式:
+	for <intvar> <first> <last>
+	  ...
+	  ...
+	next
+
+"for" と "next" の間のコマンドを、整数変数 <intvar> の値が <last> と等しく
+なるまで、繰りかえす。
+
+<intvar> の初期値は <first> 。もし <last> が <fast> より大きい場合、
+<intvar> は "next" 行に来るたびに 1 足される。もし <last> が <fast> 
+より小さい場合、<intvar> は "next" 行にくるたびに 1 引かれる。
+
+例:
+	for i 1 10		10回繰り返す。
+	  sendln 'abc'
+	next
+
+	for i 5 1		5回繰り返す。
+	  sendln 'abc'
+	next
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.6 goto
+
+形式:
+	goto <label>
+
+ <label> 行の次の行へジャンプする。
+
+例:
+	goto label		':label' の次の行へジャンプ。
+	...
+	...
+	...
+	:label		ラベル行
+	send 'abc'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.7 if, then, elseif, else, endif
+
+1) 形式:
+	if <int> <statement>
+
+もし <int> が0以外ならば、コマンド <statement> を実行する。
+
+例:
+	if A>1 goto label		もし A>1 ならば、':label' へ飛ぶ。
+
+	if result A=0			もし result<>0 ならば、A に0を代入。
+
+2) 形式:
+	if <int 1> then
+	  ...
+	  (<int 1> が真(0以外)の場合に実行されるコマンド)
+	  ...
+	[elseif <int 2>]
+	  ...
+	  (<int 1> が偽(0)で、<int 2>が真の場合に実行されるコマンド)
+	  ...
+	  ...
+	[elseif <int N>]
+	  ...
+	  (<int 1>, <int 2>,.., <int N-1> がすべて偽で、<int N> が真
+	  の場合に実行されるコマンド)
+	  ...
+	[else]
+	  ...
+	  (上の条件すべてが偽の場合に実行されるコマンド)
+	  ...
+	endif
+
+'then' は 'if' 行の最後になければならない。
+'elseif' と 'else' はなくてもよい。
+'then' と 'endif' は必ず必要。
+
+例:
+	if a=1 then
+	  b = 1
+	  c = 2
+	  d = 3
+	endif
+
+	if i<0 then
+	  i=0
+	else
+	  i=i+1
+	endif
+
+	if i=1 then
+	  c = '1'
+	elseif i=2
+	  c = '2'
+	elseif i=3
+	  c = '3'
+	else
+	  c = '?'
+	endif
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.8 include
+
+形式:
+	include <include file name>
+
+インクルードファイルに移る。
+
+例:
+	----- メインファイル 'main.ttl' ------
+	i=10
+	:loop
+	include 'sub.ttl'		インクルードファイルへ移る。
+	if i>=0 goto loop
+	end
+	--------------------------------------
+
+	----- インクルードファイル 'sub.ttl' ----
+	if i<0 then
+	  messagebox 'error!' 'sub'
+	  exit				メインファイルへ戻る。
+	endif
+	i = i - 1
+	----- インクルードファイル終わり --------	メインファイルへ戻る。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.9 pause
+
+形式:
+	pause <time>
+
+TTL の実行を <time> 秒だけ休止する。
+
+例:
+	pause 10			10秒休止
+
+	pause Time
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.10 return
+
+形式:
+	return
+
+サブルーチンを抜け、メインルーチンへ戻る。
+
+例:	5.2.1 参照。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.2.11 while, endwhile
+
+形式:
+	while <int>
+	  ...
+	  ...
+	  ...
+	endwhile
+
+'while' と 'endwhile' の間のコマンドを、 <int> が0以外である限り、繰り返す。
+
+例:
+	i = 10
+	while i>0
+	  i = i - 1	10回繰り返す。
+	endwhile
+
+...............................................................................
+5.3 文字列操作コマンド
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.3.1 str2int
+
+形式:
+	str2int <intvar> <string>
+
+10進数表現の文字列 <string> を整数値に変換し、整数変数 <intvar> に代入する。
+正常に変換できた場合は1、できなかった場合は0がシステム変数 result に
+代入される。
+
+例:
+	str2int val '123'		val=123, result=1
+
+	str2int val '123abc'		result=0
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.3.2 strcompare
+
+形式:
+	strcompare <string1> <string2>
+
+2つの文字列 <string1>, <string2> を比較し、結果をシステム変数 result に代入
+する。
+
+文字列の文字コード表現を符号なし整数(最初の文字が最上位バイト)とみなし、
+2つの文字列に対応する整数値の大小関係を求め、それに応じて以下のように
+result の値が決定される。
+
+  	大小関係	 resultの値
+  --------------------------------- 
+  <文字列1> < <文字列2>     -1
+  <文字列1> = <文字列2>      0
+  <文字列1> > <文字列2>      1
+
+例:
+	strcompare 'abc' 'def'	結果は result = -1
+
+	strcompare command 'next'
+	if result=0 goto label
+	strcompare command 'end'
+	if result=0 end
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.3.3 strconcat
+
+形式:
+	strconcat <strvar> <string>
+
+文字列変数 <strvar> の文字列値の最後に 文字列 <string> を継ぎ足す。
+
+例:
+	filename = 'c:\teraterm\'
+	strconcat filename 'test.txt'		filename='c:\teraterm\test.txt'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.3.4 strcopy
+
+形式:
+	strcopy <string> <pos> <len> <strvar>
+
+文字列 <string> の <pos> 文字目から <len> 文字分を文字列変数 <strvar>
+にコピーする。
+
+例:
+	strcopy 'tera term' 6 4 substr		substr='term'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.3.5 strlen
+
+形式:
+	strlen <string>
+
+文字列 <string> の長さをシステム変数 result に格納する。
+
+例:
+	strlen 'abc'		result の値は3
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.3.6 strscan
+
+形式:
+	strscan <string> <substring>
+
+文字列 <string> の中に 副文字列 <substring> が含まれているかどうか調べる。
+もし、 <substring> が見つかった場合、その位置がシステム変数 result に格納
+される。<substring> が複数含まれている場合、最初のものの位置が格納される。
+もし、<substring> が見つからなかった場合、 result に0が格納される。
+
+例:
+	strscan 'tera term' 'term'		result の値は6
+
+...............................................................................
+5.4 ファイル操作コマンド
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.1 fileclose
+
+形式:
+	fileclose <file handle>
+
+ファイルハンドル <file handle> で指定されるファイルをクローズする。
+このコマンド実行後、<file handle> は無効となる。
+
+例:
+	fileclose fhandle
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.2 fileconcat
+
+形式:
+	fileconcat <file1> <file2>
+
+ファイル <file2> の内容をファイル <file1> の最後に
+追加する。<file1> と <file2> は違うファイルでなければならない。
+
+例:
+	fileconcat 'test.dat' test2.dat'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.3 filecopy
+
+形式:
+	filecopy <file1> <file2>
+
+ファイル <file1> をコピーし、ファイル <file2> を作成する。
+<file2> がすでに存在する場合は上書きされる。
+<file1> と <file2> は違う名前でなければならない。
+
+例:
+	filecopy 'test.dat' 'test2.dat'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.4 filecreate
+
+形式:
+	filecreate <file handle> <filename>
+
+ファイル <filename> を新しく作成しオープンする。
+ファイルポインタはファイルの先頭にセットされる。すでに同じ名前の
+ファイルが存在する場合、ファイルサイズは0にされる。もしファイルが
+正しく作成され、オープンされた場合、ファイルハンドルが整数変数
+<file handle> に格納される。それ以外の場合、<file handle> に
+-1が格納される。
+
+例:
+	filecreate fhandle 'data.dat'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.5 filedelete
+
+形式:
+	filedelete <filename>
+
+ファイル <filename> を削除する。
+
+例:
+	filedelete 'temp.log'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.6 fileopen
+
+形式:
+	fileopen <file handle> <filename> <append flag>
+
+ファイル <filename> をファイルをオープンする。
+ファイルが存在しない場合は、新たに作成されてからオープンされる。
+もしファイルが正しくオープンされた場合、ファイルハンドルが整数変数
+<file handle> に格納される。それ以外の場合、<file handle> に-1が格納
+される。
+
+<append flag> が0の場合、ファイルポインタの位置はファイルの始め
+にセットされる。<append flag> が0以外の場合、ファイルポインタは
+ファイルの最後にセットされる。
+
+例:
+	fileopen fhandle 'data.dat' 0	ファイルポインタは先頭
+
+	fileopen fhandle 'data.dat' 1	ファイルポインタは最後
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.7 filereadln
+
+形式:
+	filereadln <file handle> <strvar>
+
+ファイルハンドル <file handle> で指定されるファイルから一行読む。
+読み込まれた行は、文字列変数 <strvar> に格納される。
+ファイルポインタは次の行の始めへ移動する。もし、行を読んでいる間に
+ファイルポインタがファイルの最後に達した場合、システム変数 result
+に1が格納される。それ以外の場合、result に0が格納される。
+
+例:
+	fileopen fhandle 'test.txt' 0		ファイルオープン
+	:loop
+	filereadln fhandle line			一行読み込み
+	if result goto fclose
+	messagebox line 'test.txt'		読み込んだ行を表示
+	goto loop				ファイル最後まで繰り返す
+	:fclose
+	fileclose fhandle			ファイルクローズ
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.8 filerename
+
+形式:
+	filerename <file1> <file2>
+
+ファイル <file1> を <file2> という名前に変更する。
+<file1> と <file2> は違う名前でなければならない。
+
+例:
+	filerename 'test.dat' test2.dat'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.9 filesearch
+
+形式:
+	filesearch <filename>
+
+ファイル <filename> が存在するかどうか調べる。
+存在する場合は、システム変数 result に1が返る。
+存在しない場合は、result に0が返る。
+
+例:
+	filesearch 'readme.txt'
+	if result=0 messagebox 'File not found.' 'error'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.10 fileseek
+
+形式:
+      fileseek <file handle> <offset> <origin>
+
+ファイルハンドル <file handle> で指定されるファイルの
+ファイルポインタを移動する。
+
+移動後のファイルポインタは、
+
+<origin> が0のとき、ファイルの最初から <offset> バイト
+<origin> が1のとき、現在の位置から <offset> バイト
+<origin> が2のとき、ファイルの最後から <offset> バイト
+
+となる。
+
+例:
+	fileseek fhandle 0 0		ファイルの最初へ移動
+
+	fileseek fhandle 10 1		現在の位置から10バイト先へ移動
+
+	fileseek fhandle 0 2		ファイルの最後へ移動
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.11 filestrseek
+
+形式:
+	filestrseek <file handle> <string>
+
+ファイルハンドル <file handle> で指定されるファイルから、
+文字列 <string> を検索する。検索は現在のファイルポインタの位置から開始する。
+
+<string> が見つかった場合、ファイルポインタは <string> の次の文字の位置になり、
+システム変数 result に1が格納される。
+<string> が見つからなかった場合、ファイルポインタは移動せず、システム変数
+result に0が格納される。
+
+例:
+	fileopen fhandle 'teraterm.log' 0	ファイル 'teraterm.log' から
+	filestrseek fhandle 'abc'		文字列 'abc' を検索し、
+	if result=0 goto not_found
+	filereadln fhandle str			'abc' からその行の終わりまで
+	:not_found				を読み込みstrに格納
+	fileclose fhandle
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.12 filewrite
+
+形式:
+	filewrite <file handle> <string>
+
+ファイルハンドル <file handle> で指定されるファイルへ、
+文字列 <string> を書き込む。
+
+例:
+	filewrite fhandle '---------cut here---------'#13#10
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.4.13 filewriteln
+
+形式:
+	filewriteln <file handle> <string>
+
+ファイルハンドル <file handle> で指定されるファイルへ、
+文字列 <string> と改行文字 (CR+LF) を書き込む。
+
+例:
+	filewriteln fhandle '---------cut here---------'
+
+...............................................................................
+5.5 その他のコマンド
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.1 beep
+
+形式:
+	beep
+
+ビープ音を鳴らす。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.2 exec
+
+形式:
+	exec <command line>
+
+コマンドライン文字列 <command line> に従い、アプリケーションを起動する。
+
+例:
+	exec 'notepad readme.txt'		「メモ帳」を起動
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.3 getdate
+
+形式:
+	getdate <strvar>
+
+現在の日付を文字列変数 <strvar> に格納する。形式は "YYYY-MM-DD"。
+
+例:
+	getdate datestr
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.4 gettime
+
+形式:
+	gettime <strvar>
+
+現在の時刻を文字列変数 <strvar> に格納する。 形式は"HH:MM:SS"。
+
+例:
+	gettime timestr
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.5 inputbox
+
+形式:
+	inputbox <message> <title>
+
+文字列を入力するためのダイアログボックスを開く。文字列 <message> はダイアログ
+ボックスに表示されるメッセージ、文字列 <title> はダイアログボックスのタイトル。
+入力された文字列はシステム変数 inputstr に代入される。
+
+例:
+	inputbox 'Password:' 'Login'
+	sendln inputstr
+ 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.6 int2str
+
+形式:
+	int2str <strvar> <integer value>
+
+整数値 <integer value> を10進表現の文字列に変換して文字列型変数 <strvar>
+に代入する。
+
+例:
+	int2str valstr 123		valstrに '123' を代入
+ 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.7 messagebox
+
+形式:
+	messagebox <message> <title>
+
+ダイアログボックスを開き、ユーザーにメッセージを知らせる。文字列 <message> は
+ダイアログボックスに表示されるメッセージ、文字列 <title> はダイアログ
+ボックスのタイトル。
+
+例:
+	messagebox ErrorMessage 'Error'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.8 passwordbox
+
+形式:
+	passwordbox <message> <title>
+
+パスワードを入力するためのダイアログボックスを開く。
+文字列 <message> はダイアログボックスに表示されるメッセージ、文字列 <title> は
+ダイアログボックスのタイトル。入力されるパスワードはそのまま表示されず、
+かわりに、"****" のように表示される。入力されたパスワードはシステム変数
+inputstr に代入される。
+
+例:
+	passwordbox 'Enter password' 'Login'
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.9 show
+
+形式:
+	show <show flag>
+
+<show flag> が0の場合、TTMACRO を最小化する。
+<show flag> が0以外の場合、TTMACRO を元の大きさに戻す。
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+5.5.10 yesnobox
+
+形式:
+	yesnobox <message> <title>
+
+Dialog boxを開き。ユーザーに「はい」/「いいえ」を選択させる。
+文字列 <message> はダイアログボックスに表示されるメッセージ、
+文字列 <title> はダイアログボックスのタイトル。
+
+「はい」ボタンが押された場合、システム変数 resultに1が格納される。
+「いいえ」ボタンが押された場合、result に0が格納される。
+
+例:
+	yesnobox 'もう一回やりますか?' 'Tera Term'
+	if result goto retry
+	end
+
+-------------------------------------------------------------------------------
+ 6. 補足説明
+
+...............................................................................
+エラーメッセージ
+
+ エラーメッセージ			意味
+ ---------------------------------------------------------------------------
+ Can't call sub.		サブルーチンを呼べない。サブルーチンは
+				別のファイルにある。
+
+ Can't link macro.		TTMACRO と Tera Term の間の接続に失敗。
+
+ Can't open file.		インクルードファイルが存在しないか、
+				インクルードの階層が深すぎる。
+
+ ")" expected.			カッコが閉じていない。
+
+ Link macro first.		TTMACRO と Tera Term の間の接続が確立して
+				ないため、コマンドが実行できない。
+
+ Divide by zero.		0で割ろうとした。
+
+ Invalid control.		"else", "elseif", "endif" の誤った使用。
+
+ Label already defined.		ラベル名の多重使用。
+
+ Label requiered.		ラベルが見つからない。
+
+ Stack overflow.		サブルーチン、"for-next" ループ、
+				"while-endwhile" の階層が深すぎる。
+
+ Syntax error.			コマンドの形式が間違っている。
+
+ Too many labels.		ラベルの数が多すぎる。(最大256個)
+
+ Too many variables.		変数の数が多すぎる。(整数型、文字列型
+				それぞれ最大128個ずつ)
+
+ Type mismatch.			定数または変数の型が間違っている。
+
+ Variable not initialized.	初期化されてない変数を参照した
+
+...............................................................................
+改行文字について
+
+ホストから送られてくる改行文字 (CR または CR+LF) は Tera Term に
+よって CR+LF に変換され TTMACRO に渡される。
+
+Tera Term へ送る改行文字は CR+LF を用いる。
+
+CR、LF の ASCII コードはそれぞれ13、10(10進数)。
+
+例: 
+  send 'abc'#13#10		"sendln 'abc'" と同じ。実際にホストへ送られる
+				 改行文字はTera Termの設定により決まる。
+
+  wait #10'abc' 'def'#13	行頭の "abc"、行末の "def" を待つ。
+
+  logwrite 'abc'#13#10		ログファイルに改行文字を書き込む場合は
+				必ずCR+LFにする。
+
+...............................................................................
+
+-------------------------------------------------------------------------------

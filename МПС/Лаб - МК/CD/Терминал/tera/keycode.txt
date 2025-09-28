@@ -1,0 +1,196 @@
+	KEYCODE.EXE for Tera Term
+	T. Teranishi
+	
+	Copyright (C) 1994-1996 T. Teranishi
+	All Rights Reserved.
+
+KEYCODE.EXE is a utility which displays the key codes used in the
+Tera Term's keyboard setup file.
+
+-------------------------------------------------------------------------------
+1. INSTALLATION
+
+1) Copy KEYCODE.EXE to a directory (folder) of your choice.
+
+2) If you are using Windows 3.1 or Windows NT, install KEYCODE.EXE
+in Program Manager with its icon. If you are using Windows 95,
+create a shortcut for KEYCODE.EXE in a folder of your choice,
+or in the Start menu, or on the desktop.
+
+-------------------------------------------------------------------------------
+2. USAGE
+
+When you run KEYCODE.EXE, the message "Push any key" will be displayed
+in the window.  When you press a key or a combination of keys (such as
+Ctrl+key), the message "Key code is XXXX." will be displayed. XXXX is a
+decimal number.
+
+-------------------------------------------------------------------------------
+3. ABOUT THE KEYBOARD SETUP FILE
+
+In the keyboard setup file, you can define certain keys on your keyboard as
+VT terminal keys.  You can also define user keys, which will send character
+strings of your choice.
+
+The file name of the keyboard setup file can be specified as a command line
+parameter of Tera Term (see CMNDLINE.TXT). If you omit the file name extension,
+the default extension ".CNF" is used. If you omit the file name, the default
+file name "KEYBOARD.CNF" is used. If the specified keyboard setup file does
+not exist, the default setup is used.
+
+The default setup is intended for the IBM-PC/AT 101-key keyboard. If you are
+using such keyboard and have no need to customize key definitions, you don't
+need to make a keyboard setup file.  Otherwise, copy IBMKEYB.CNF to
+KEYBOARD.CNF, and edit it.
+
+...............................................................................
+3.1 FORMAT OF THE KEYBOARD SETUP FILE
+
+Each key or key combination has a unique key code, which is called
+"PC key code". 
+
+The keyboard setup file has five sections:  [VT editor keypad],
+[VT numeric keypad], [VT function keys], [Shortcut keys], and [User keys].
+
+1) [VT editor keypad] section
+In this section, VT editor keys are assigned to PC keys.
+
+	Format:
+		<VT editor key name>=<PC key code>
+
+	where:
+
+	<VT editor key name>
+		Up, Down, Right, Left, Find, Insert, Remove, Select,
+		Prev, Next
+
+	  <PC key code>
+		PC key code (decimal number)
+
+	Example:
+		Up=328
+
+2) [VT numeric keypad] section
+In this section, VT numeric keys are assigned to PC keys.
+
+	Format:
+		<VT numeric key name>=<PC key code>
+
+	where:
+
+	  <VT numeric key name>
+		Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8,
+		Num9, NumMinus, NumComma, NumPeriod, NumEnter, PF1,
+		PF2, PF3, PF4
+
+	  <PC key code>
+		PC key code (decimal number)
+
+	Example:
+		Num0=82
+
+3) [VT function keys] section
+In this section, VT function keys are assigned to PC keys.
+
+	Format:
+		<VT function key name>=<PC key code>
+
+	where:
+
+	  <VT function key name>
+		F6, F7, F8, F9, F10, F11, F12, F13, F14, Help, Do,
+		F17, F18, F19, F20
+
+	  <PC key code>
+		PC key code (decimal number)
+
+	Example:
+		F6=64
+
+4) [Shortcut keys] section
+In this section, shortcut keys of Tera Term are assigned to PC keys.
+
+	Format:
+		<Shortcut key name>=<PC key code>
+
+	where:
+	  <Shortcut key name>	Function
+	  --------------------------------------------
+	  EditCopy		[Edit] Copy command
+	  EditPaste		[Edit] Paste comannd
+	  EditPasteCR		[Edit] Paste<CR> command
+	  LineUp		Scroll up 1 line
+	  LineDown		Scroll down 1 line
+	  PageUp		Scroll up 1 page
+	  PageDown		Scroll down 1 page
+	  BuffTop		Scroll to buffer top
+	  BuffBottom		Scroll to buffer bottom
+	  SendBreak		[Control] Send break command
+
+	  <PC key code>
+		PC key code (decimal number)
+
+	Example:
+		LineUp=1352
+
+5) [User keys] section
+This section defines user keys and character strings which are sent by
+pressing the user keys.
+
+	Format:
+		<User key name>=<PC key code>,<Conversion flag>,
+				<Character string>
+
+	where:
+
+	  <User key name>
+		User1, User2, User3,...., User99
+		Maximum number of the user keys is 99. 
+		For example, if you want to define ten user keys,
+		you must use the first ten names, from "User1" to "User10".
+
+	  <PC key code>
+		PC key code (decimal number)
+
+	  <Conversion flag>
+		New-line code conversion (CR -> CR/CR+LF) flag
+			0	No conversion
+			1	New-line codes in the character string
+				are converted by Tera Term.
+
+	  <Character string>
+		Character string to be sent by pressing the user key.
+		Each non-printable character (control character) in
+		the string can be expressed as a "$" and ASCII code
+		in two-character hex number. For example, CR character
+		is expressed as "$0D". "$" itself is expressed as "$24".
+
+	Example:
+		User1=59,0,telnet myhost
+		User2=60,0,$0D$0A
+		User3=61,1,$0D
+
+...............................................................................
+3.2 HOW TO DEASSIGN KEYS 
+
+If you don't want to assign a certain VT key or shortcut key to any PC key,
+use the word "off" instead of PC key code.
+
+Example:
+	EditCopy=off
+
+...............................................................................
+3.3 KEY COMBINATIONS
+
+The following key combinations are acceptable to Tera Term and KEYCODE.EXE:
+
+	Shift+key
+	Ctrl+key
+	Shift+Ctrl+key
+	Shift+Alt+key
+	Ctrl+Alt+key
+	Shift+Ctrl+Alt+key
+
+Since some combinations (such as Alt+key) are used as shortcut keys of
+Tera Term and Windows, they don't have PC key codes and can't be specified
+in the keyboard setup file.

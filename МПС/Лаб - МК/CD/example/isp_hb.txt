@@ -1,0 +1,163 @@
+*************************************************
+* In System Programmer for ATMEL AT89S8252      *
+* Version: V1.0                                 *
+* 10.1999 by Holger Buss      Germany           *
+* mailto: holger_buss@bigfoot.com               *
+* URL: http://www.bigfoot.com/~holger_buss/isp  *
+*************************************************
+
+Hello developer!
+
+This is a tool to program the ATMEL AT89S8252.
+
+The AT89S8252 is a 80C51 compatible 8-bit microcontroller with 8k internal code and 
+2k data flash on chip. The chip allows the program memory to be reprogrammed in-system
+through a SPI serial interface. This provides a highly flexible and cost effective 
+solution to many embedded control applications.
+
+The chip has the following features:
+ - 80C51-compatible core (you'll find a lot of tools for this device)
+ - in-system programmable by this tool
+ - 8k protectable downloadable flash
+ - 2k EEPROM
+ - 256 Bytes RAM
+ - 32 I/O lines
+ - three 16 bit timer/counters
+ - a six-level interrupt architecture with nine interrupt sources
+ - a full duplex serial interface
+ - ... and many more ...
+
+*****************************************************************
+            How to build the programming interface
+*****************************************************************
+
+All you need to program the device is this program and five wires from
+your PC to the target board. 
+
+Your code needs to be in raw BIN format.
+(if your compiler generates HEX-Files, use a "HEX to BIN" converter. You'll find it in 
+the internet for free)
+
+ Connect PC and chip as follows:
+   Printer Port   ATMEL
+   Pin:6  (D4)    Pin:9  (RESET)
+   Pin:7  (D5)    Pin:6  (MOSI)
+   Pin:8  (D6)    Pin:8  (SCK)
+   Pin:10 (ACK)   Pin:7  (MISO)
+   Pin:25 (GND)   Pin:20 (GND)
+
+The cable should not be longer then 2m to avoid electrical reflections.
+To test the connection use the /TEST mode of the software (see below).
+
+Don't forget to:
+ - strap /EA (Pin 31 uC) to Vcc to operate from internal flash-memory
+ - connect a xtal (4 - 24MHz) and 5V power supply to the uC
+ - connect a capacitor and a resistor to RESET to get a power on reset (see graphic below)
+ - connect pullups to P0 if this port is used as output
+ - avoid differences in ground potential between your target hardware and the PC
+ - check what is connected to the portpins P1.5, P1.6 and P1.7. These pins are used to program the 
+   chip. Your target board could response to these signals if something is connected to these pins.
+
+An example to connect RESET:
+
+                             / \ +5V
+                              |
+                              |
+                             --- +
+                       10uF  ---  Capacitor
+                              |
+                              |
+      PC (D4) ---> --[1k]-----o----------> AT89S8252 Pin:9 (Reset)
+                              |
+                              |
+                              -
+                       10k   | |  Resistor
+                              -  
+                              |
+                              |
+                             --- GND
+
+
+*****************************************************************
+              How to use the software
+*****************************************************************
+
+Usage: ISP_HB.EXE /LPTn [/ERASE] [/LOCK] [/SLOW] [/READ] [/DATA] [/TEST] <file>
+
+description:
+    /LPTn    use LPT1, LPT2 or LPT3 to select the printer port
+    /ERASE   Erase code and data memory before writing
+    /LOCK    Set lock bits after writing
+    /SLOW    Use slower data transfer (in case of problems)
+    /READ    Read code/data memory
+    /DATA    Program/Read the 2k data memory instead of code memory
+    /TEST    Start hardware testmode
+
+Example 1:
+  Write the file PROGRAM.BIN into the CODE memory and erase the chip first.
+  The Programmer is connected to LPT1.
+ ISP_HB.EXE /LPT1 /ERASE PROGRAM.BIN 
+
+Example 2:
+  Write the file DAT1.BIN into the DATA memory and do not erase the chip.
+  The Programmer is connected to LPT1.
+ ISP_HB.EXE /LPT1 /DATA DAT1.BIN 
+
+Example 3:
+  Read the DATA memory and write to file CODE.BIN
+  The Programmer is connected to LPT2.
+ ISP_HB.EXE /LPT2 /READ CODE.BIN 
+
+Example 4:
+  Read the DATA memory and write to file DAT2.BIN
+  The Programmer is connected to LPT2.
+ ISP_HB.EXE /LPT2 /READ /DATA DAT2.BIN 
+
+
+*****************************************************************
+         Test mode
+*****************************************************************
+
+ usage: ISP_HB.EXE /LPTn /TEST
+ In the test mode the logical states of the programming cable can be tested.
+ Type 1,2 or 3 to change the state of the output lines. 
+ High should be between 4 and 5 volts, Low 0 to 0,5 volts.
+ If the high level is between 2 and 4 Volts, connect 10k resistors from the
+ output lines to Vcc to pull up the level.
+
+
+*****************************************************************
+        In case of problems:
+*****************************************************************
+
+If you have problems with programming the device:
+- check 5V power supply
+- use the /TEST mode to check the programming interface
+- connect 10k resitors from MOSI, MISO and SCK to Vcc (sometimes nescessary for notebooks)
+- check if you use the right printer port
+- try programming in DOS mode if you use windows, sometimes a driver locks the port
+- check the xtal circuit
+- try /SLOW mode
+
+
+************************************************************************
+
+    (C) Copyright 1999,
+    Holger Buss, Moormerland, Germany
+
+    You may use this tool for any purpose.
+    The program and information may only be distributed without costs.
+    Email to get the source code, if you like this tool or if
+    there is something to improve.
+  
+************************************************************************
+USING THIS PROGRAM OR INFORMATION IS ON OWN RISC.
+THE CODE AND INFORMATION IS PROVIDED WITHOUT WARRANTY OF ANY KIND.
+NO WARRANTY IN CASE OF ANY PROBLEMS, INCLUDING DIRECT, INDIRECT, 
+INCIDENTAL OR LOSS OF BUSINESS PROFITS. 
+********************************************************************
+
+
+
+
+

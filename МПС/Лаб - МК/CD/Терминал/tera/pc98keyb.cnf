@@ -1,0 +1,124 @@
+; Sample of KEYBOARD.CNF for the NEC PC-9801 keyboard (Windows 95).
+; See KEYCODE.TXT for the description of the format.
+;
+[VT editor keypad]
+;Up arrow key
+Up=58
+;Down arrow key
+Down=61
+;Right arrow key
+Right=60
+;Left arrow key
+Left=59
+;Shift + DEL key
+Find=569
+;INS key
+Insert=56
+;DEL key
+Remove=57
+;Shift + INS key
+Select=568
+;ROLL DOWN key
+Prev=55
+;ROLL UP key
+Next=54
+
+[VT numeric keypad]
+;Num pad 0 key
+Num0=78
+;Num pad 1 key
+Num1=74
+;Num pad 2 key
+Num2=75
+;Num pad 3 key
+Num3=76
+;Num pad 4 key
+Num4=70
+;Num pad 5 key
+Num5=71
+;Num pad 6 key
+Num6=72
+;Num pad 7 key
+Num7=66
+;Num pad 8 key
+Num8=67
+;Num pad 9 key
+Num9=68
+;Num pad '*'key
+NumMinus=69
+;Num pad '+'key
+NumComma=73
+;Num pad '.' key
+NumPeriod=80
+;Num pad '=' key
+NumEnter=77
+;HOME CLR key
+PF1=62
+;HELP key
+PF2=63
+;Num pad '-'key
+PF3=64
+;Num pad '/'key
+PF4=65
+
+[VT function keys]
+;F6 key
+F6=103
+;F7 key
+F7=104
+;F8 key
+F8=105
+;F9 key
+F9=106
+;F10 key
+F10=107
+;Shift + F1 key
+F11=610
+;Shift + F2 key
+F12=611
+;Shift + F3 key
+F13=612
+;Shift + F4 key
+F14=613
+;Shift + F5 key
+Help=614
+;Shift + F6 key
+Do=615
+;Shift + F7 key
+F17=616
+;Shift + F8 key
+F18=617
+;Shift + F9 key
+F19=618
+;Shift + F10 key
+F20=619
+
+[Shortcut keys]
+EditCopy=off
+EditPaste=off
+EditPasteCR=off
+; Ctrl + up-arrow
+LineUp=1082
+; Ctrl + down-arrow
+LineDown=1085
+; Ctrl + ROLL-DOWN
+PageUp=1079
+; Ctrl + ROLL-UP
+PageDown=1078
+; Ctrl + HOME-CLR
+BuffTop=1086
+; Ctrl + HELP
+BuffBottom=1087
+SendBreak=off
+
+[User keys]
+;Example of user key definitions.
+;
+;	F1 key: character string
+;User1=98,0,telnet myhost
+;
+;	F2 key: control characters
+;User2=99,0,$0D$0A
+;
+;	F3 key: CR character with new-line code conversion (CR -> CR/CR+LF)
+;User3=100,1,$0D

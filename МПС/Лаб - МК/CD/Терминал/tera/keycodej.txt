@@ -1,0 +1,198 @@
+	KEYCODE.EXE for Tera Term
+	T. Teranishi
+	
+	Copyright(C) 1994-1996 T. Teranishi
+	All Rights Reserved.
+
+KEYCODE.EXE は Tera Term のキーボード設定ファイルの中で用いられる PC key code
+を調べるためのユーティリティーです。
+
+-------------------------------------------------------------------------------
+1. インストール
+
+1) 好きなディレクトリに KEYCODE.EXE をコピーしてください。
+
+2) Windows 3.1 または Windows NT の場合、プログラムマネージャーに KEYCODE.EXE
+のアイコンを登録してください。Windows 95 の場合は、KEYCODE.EXE の
+ショートカットを好きな場所(フォルダ、スタートメニュー、デスクトップなど)に
+作成してください。
+
+-------------------------------------------------------------------------------
+2. 使用法
+
+KEYCODE.EXE を起動すると、"Push any key." というメッセージが表示されます。
+そこで、あるキーまたはキーの組み合わせ (Ctrl+ キーなど)を押すと、
+"Key code is XXXX." (XXXX は最大4桁の10進数)と表示され、PC key code を知ること
+ができます。
+
+-------------------------------------------------------------------------------
+3, キーボード設定ファイルについて
+
+キーボード設定ファイルによって、 VT 端末のキーを PC のあるキーに割り当てたり、
+ユーザー定義キーと、そのキーを押したときに送出する文字列を指定したりすること
+ができます。
+
+Tera Term のコマンドラインでキーボード設定ファイルのファイル名を指定すること
+ができます (CMNDLINE.TXT 参照)。ファイル名を指定しない場合、ファイル
+KEYBOARD.CNF が読み込まれます。ファイル名の拡張子を省略した場合は ".CNF"
+であるとみなされます。もし指定した設定ファイルが存在しなければ、デフォルトの
+設定が用いられます。
+
+IBM-PC/AT 101 (106) キーボードを使用していて、キー定義をカスタマイズする
+必要がない場合は、キーボード設定ファイルは必要ありません。カスタマイズする
+必要がある場合は、配布パッケージに含まれている IBMKEYB.CNF をコピーして
+KEYBOARD.CNF を作成し、それを編集してください。
+
+NEC PC9801 シリーズのキーボードを使用している場合は、配布パッケージに含まれて
+いる PC98KEYB.CNF をコピーして KEYBOARD.CNF を作成し、必要があればそれを編集
+してください。
+
+...............................................................................
+3.1 キーボード設定ファイルの形式
+
+キーボード設定ファイルの中で用いられる PC key code は PC の各キーまたはキーの
+組み合わせに対応した数値で、使用するキーボードによって異なります。
+
+キーボード設定ファイルには、[VT editor keypad], [VT numeric keypad].
+[VT function keys], [Shortcut keys], [User keys] の5つのセクションが存在
+します。
+
+1) [VT editor keypad] セクション
+VT 端末のエディターキーを PC キーに割り当てます。
+
+	形式:
+		<VT editor key name>=<PC key code>
+
+	<VT editor key name>
+		Up, Down, Right, Left, Find, Insert, Remove, Select,
+		Prev, Next
+
+	<PC key code>
+		PC key code (10進数)
+
+	例:
+		Up=328
+
+2) [VT numeric keypad] セクション
+VT端末の数値キーを PC キーに割り当てます。
+
+	形式:
+		<VT numeric key name>=<PC key code>
+
+	<VT numeric key name>
+		Num0, Num1, Num2, Num3, Num4, Num5, Num6, Num7, Num8,
+		Num9, NumMinus, NumComma, NumPeriod, NumEnter, PF1,
+		PF2, PF3, PF4
+
+	<PC key code>
+		PC key code (10進数)
+
+	例:
+		Num0=82
+
+	注意: VT 端末ではメインキーパッドの "Enter" キーと数値キーパッドの
+	"Enter" キーが違う文字列を送出するモードがあるので、"NumEnter=" の
+	後にはメインキーの "Enter" の PC key code を書かないでください。
+	メインキーパッドの "Enter" と数値キーパッドの "Enter" が同じ
+	PC key code を発生するキーボード(例えば PC9801 キーボード)の場合は
+	注意が必要です。
+
+3) [VT function keys] セクション
+VT 端末のファンクションキーを PC キーに割り当てます。
+
+	形式:
+		<VT function key name>=<PC key code>
+
+	<VT function key name>
+		F6, F7, F8, F9, F10, F11, F12, F13, F14, Help, Do,
+		F17, F18, F19, F20
+
+	<PC key code>
+		PC key code (10進数)
+
+	例:
+		F6=64
+
+4) [Shortcut keys] セクション
+Tera Term のショートカットキーを指定します。
+
+	形式:
+		<Shortcut key name>=<PC key code>
+
+	<Shortcut key name>	機能
+	--------------------------------------------
+	EditCopy		[Edit] Copy コマンド
+	EditPaste		[Edit] Paste コマンド
+	EditPasteCR		[Edit] Paste<CR> コマンド
+	LineUp			一行スクロールアップ
+	LineDown		一行スクロールダウン
+	PageUp			一ページスクロールアップ
+	PageDown		一ページスクロールダウン
+	BuffTop			バッファー先頭へスクロール
+	BuffBottom		バッファー最後へスクロール
+	SendBreak		[Control] Send break コマンド
+
+	<PC key code>
+		PC key code (10進数)
+
+	例:
+		LineUp=1352
+
+5) [User keys] セクション
+ユーザー定義キーと、そのキーを押したときに送出する文字列を指定します。
+
+	形式:
+		<User key name>=<PC key code>,<Conversion flag>,<文字列>
+
+	<User key name>
+		User1, User2, User3,...., User99
+		最大99個まで設定可能、例えば10個設定する場合は User1 から
+		順番に User10 までを使用し、それ以外の名前を使用してはなら
+		ない。
+
+	<PC key code>
+		PC key code (10進数)
+
+	<Conversion flag>
+		送出する文字列の中に漢字や改行コードが含まれる場合、Tera Term
+		の設定にあわせて変換するかどうかを指定するフラグ。
+			0	漢字や改行コードを変換しない。
+			1	漢字や改行コードを変換する。
+
+	<文字列>:
+		キーを押したときに送出する文字列。表示不可能な文字(制御文字等)
+		はその ASCII コードを $ と2文字の16進数で表現する。
+		(例: CR 文字は '$0D') "$" そのものは "$24" で表現する。
+
+	例:
+		User1=59,0,telnet myhost
+		User2=60,0,$0D$0A
+		User3=61,1,$0D
+		User4=62,1,こんにちは。
+
+...............................................................................
+3.2 キー設定項目を無効にする方法
+
+VT キーやショートカットキーに PC キーを割り当てたくない場合は、PC key code 
+の代わりに "off" を指定してください。
+
+例:
+	EditCopy=off
+
+...............................................................................
+3.3 可能なキーの組み合わせ
+
+キーボード設定ファイルで設定可能な PC のキーは, KEYCODE.EXE で PC key code が
+表示されるキーです。単一のキーだけでなく、Ctrl, Shift, Alt を用いたキーの組み
+合わせでも PC key code を表示させることができます。可能な組み合わせを
+以下に示します。
+
+	Shift+key
+	Ctrl+key
+	Shift+Ctrl+key
+	Shift+Alt+key
+	Ctrl+Alt+key
+	Shift+Ctrl+Alt+key
+
+Tera Term や Windows のショートカットキーに割り当てられているキーの組み合わせ
+(例えば Alt+key など)はキーボード設定ファイルで指定できません。

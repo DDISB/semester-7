@@ -1,0 +1,73 @@
+Command line (shortcut link) format
+
+TTERMPRO [<host name / host address>[:<TCP port#>]]
+	 [/B] [/C=<serial port#>]
+	 [/F=<setup file>] [/FD=<file transfer directory>]
+	 [/H] [/K=<keyboard setup file>]
+	 [/KR=<kanji code (receive)>] [/KT=<kanji code (transmit)>]
+	 [/P=<TCP port#>] [/R=<replay file>] [/T=<telnet flag>]
+	 [/W="<window title>"]
+	 [/X=<window pos (x)] [/Y=<window pos (y)]
+	 [;<comment>]
+   where:
+	<host name>[:<TCP port#>]	Host name (with TCP port#)
+	<host address>[:<TCP port#>]	IP address (with TCP port#)
+
+	/B	Telnet binary option (default: none)
+
+	/C=<serial port#>
+	  /C=1  COM1
+	  /C=2  COM2
+	  /C=3  COM3
+	  /C=4  COM4
+
+	/F=<setup file>
+	  /F=TERATERM.INI (default)
+
+	/FD=<file transfer directory>
+
+	/H	Hide title bar (default: none)
+
+	/K=<keyboard setup file>
+	  /K=KEYBOARD.CNF (default)
+
+	/KR=<kanji code (receive)>	Note: Japanese mode only
+	  /KR=SJIS
+	  /KR=EUC
+	  /KR=JIS
+
+	/KT=<kanji code (transmit)>	Note: Japanese mode only
+	  /KT=SJIS
+	  /KT=EUC
+	  /KT=JIS
+
+	/P=<TCP port#>
+	  /P=23 (default (telnet))
+
+	/R=<replay file>
+
+	/T=<telnet flag>
+	  /T=1	Telnet enable (default)
+	  /T=0	Telnet disable
+
+	/W="<window title>"
+
+	/X=<window position (x)>
+
+	/Y=<window position (y)>
+
+	;<comment>	Comment. Should be last in the command line.
+
+Example:
+	TTERMPRO
+	TTERMPRO myhost.mydomain
+	TTERMPRO myhost.mydomain:23
+	TTERMPRO 111.111.11.11
+	TTERMPRO myhost.mydomain /T=0 /P=7
+	TTERMPRO /C=1
+	TTERMPRO /F=TELNET.INI
+	TTERMPRO foohost.foodomain /F=FOOHOST.INI
+	TTERMPRO /C=2 /F=MYSETUP.INI
+	TTERMPRO /K=MYKEY.CNF /W="My host"
+	TTERMPRO /R=README.TXT ; replay a file
+	TTERMPRO myhost /B /X=100 /Y=50

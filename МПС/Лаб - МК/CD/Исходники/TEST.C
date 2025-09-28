@@ -1,0 +1,45 @@
+/*
+   The file test.hex contains a test program.
+   Port 2 will count form 0 to 255.
+   P2.0 --> high frequency (f max)
+   P2.1 --> f max / 2
+   P2.2 --> f max / 4
+   P2.3 --> f max / 8
+   P2.4 --> f max / 16
+   P2.5 --> f max / 32
+   P2.6 --> f max / 64
+   P2.7 --> f max / 128
+  
+  Just connect a LED and a resistor to P2.6
+  to see it flash.
+       O +5V (pin 40)
+       |
+       -
+      | | Resistor (from 470 Ohm to 1.5 kOhm)
+       -
+       |
+      ---  -->  LED
+      \ /  -->
+      --- 
+       |
+      P2.6 (pin 27)
+*/
+
+/* This was the source code for the test program */
+/* It was compiled with KEIL c51-compiler        */
+/* Try www.keil.com for a demo                   */
+
+//#include <At898252.h>     // include registers
+#include	"89xs8252.h"
+unsigned char a[4]={0xFE,0xFD,0xFB,0xF7};
+void main(void)
+{
+ unsigned long i;
+ unsigned char j;
+ while(1)                 // forever
+  {
+//    P2++;                 // count port 2
+    P0 = a[j++&3];
+    for (i=0;i<1000;i++); // delay a little bit
+  }  
+}

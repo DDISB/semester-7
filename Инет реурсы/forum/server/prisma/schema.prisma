@@ -1,0 +1,137 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+
+
+// datasource - настройки подключения к БД
+datasource db {
+  provider = "sqlite" // или "mysql", "sqlite", "sqlserver", "postgresql"
+  url      = "file:./dev.db"
+}
+
+// generator - настройки генерации клиента
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  role      UserRole @default(USER)
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Отношения
+  posts     Post[]
+  sessions  Session[]
+  
+  @@map("users")
+}
+
+// Уровень 1: Основные категории
+model Category {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  order       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  
+  // Отношения к подкатегориям
+  subcategories Subcategory[]
+  
+  @@map("categories")
+}
+
+// Уровень 2: Подкатегории
+model Subcategory {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Связь с категорией
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  
+  // Отношения к разделам
+  sections    Section[]
+  
+  @@map("subcategories")
+}
+
+// Уровень 3: Разделы (вместо форумов)
+model Section {
+  id            String   @id @default(cuid())
+  name          String
+  description   String?
+  order         Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Связь с подкатегорией
+  subcategoryId String
+  subcategory   Subcategory @relation(fields: [subcategoryId], references: [id], onDelete: Cascade)
+  
+  // Отношения к постам
+  posts         Post[]
+  
+  // Статистика раздела
+  postCount     Int      @default(0)
+  lastPostAt    DateTime?
+  
+  @@map("sections")
+}
+
+model Post {
+  id        String   @id @default(cuid())
+  title     String
+  content   String   // Поддержка Markdown
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Связь с пользователем
+  authorId  String
+  author    User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  // Связь с разделом
+  sectionId String
+  section   Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  
+  // Иерархия постов (для ответов)
+  parentId  String?
+  parent    Post?   @relation("PostReplies", fields: [parentId], references: [id])
+  replies   Post[]  @relation("PostReplies")
+  
+  // Статистика
+  viewCount Int     @default(0)
+  isPinned  Boolean @default(false)
+  isLocked  Boolean @default(false)
+  
+  @@map("posts")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  @@map("sessions")
+}
+
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+}

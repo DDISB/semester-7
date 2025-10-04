@@ -6,6 +6,9 @@
   "author": "",
   "type": "commonjs",
   "main": "index.js",
+  "_moduleAliases": {
+    "$": "src"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon --exec ts-node src/server.ts",
@@ -20,6 +23,7 @@
     "@prisma/client": "^6.16.3",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
+    "module-alias": "^2.2.3",
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {

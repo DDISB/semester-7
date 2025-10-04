@@ -1,8 +1,10 @@
+require('module-alias/register');
 import http from 'http'
 import { URL } from 'url'
-import { register } from './auth/register'
-import { login } from './auth/login'
+import { register } from '$/auth/register'
+import { login } from '$/auth/login'
 import { UserInput, LoginInput } from './types/index'
+import { getAll } from '$/api/category';
 
 const server = http.createServer(async (req, res) => {
   const { method, url } = req
@@ -25,6 +27,8 @@ const server = http.createServer(async (req, res) => {
     await handleRegister(req, res)
   } else if (method === 'POST' && pathname === '/api/login') {
     await handleLogin(req, res)
+  } else if (method === 'GET' && pathname === '/api/categories') {
+    await handleCategories(req, res)
   } else {
     res.writeHead(404, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ error: 'Route not found' }))
@@ -76,6 +80,23 @@ async function handleLogin(req: http.IncomingMessage, res: http.ServerResponse) 
     console.error('Login handler error:', error)
     res.writeHead(500, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ error: 'Internal server error' }))
+  }
+}
+
+async function handleCategories(req: http.IncomingMessage, res: http.ServerResponse) {
+  try {
+    const result = await getAll();
+
+    if (result.success) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
+    } else {
+      res.writeHead(404, { 'Content-Type': 'application/json' });
+    }
+    res.end(JSON.stringify(result));
+  } catch (error) {
+    console.error('Categories handler error:', error);
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Internal server error' }));
   }
 }
 

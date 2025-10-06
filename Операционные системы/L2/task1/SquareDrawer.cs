@@ -179,12 +179,20 @@ namespace task1
                 Point point = ReadPointFromFile();
                 if (token.IsCancellationRequested) break; // Проверка после чтения
 
-                // Вход в CS по Петтерсону (myId = 0)
-                int myId = 0;
+                // Вход в CS по Петтерсону (myId = 1)
+                int myId = 1;
                 SharedData.flagDraw[myId] = true;
                 SharedData.turnDraw = 1 - myId;
+                Console.WriteLine("Квадрат: попытка войти в КС рисовение");
+                bool flagConsole = true;
+
                 while (SharedData.flagDraw[1 - myId] && SharedData.turnDraw == (1 - myId))
                 {
+                    if (flagConsole)
+                    {
+                        flagConsole = false;
+                        Console.WriteLine("Квадрат: Ожидание доступа к КС");
+                    }
                     if (token.IsCancellationRequested) break; // Проверка в busy-wait
                     await Task.Yield();
                 }
@@ -194,7 +202,7 @@ namespace task1
                     SharedData.flagDraw[myId] = false; // Выход из CS
                     break;
                 }
-
+                Console.WriteLine("Квадрат: Работа в КС");
                 // Критическая секция: Рисование
                 Point point2 = new Point(point.X, point.Y - 20);
                 Point point3 = new Point(point.X + 40, point.Y - 20);
@@ -202,15 +210,15 @@ namespace task1
                 DrawSquare(point, point2, point3, point4);
 
                 // Выход
-                SharedData.flagDraw[myId] = false;
-
                 await Task.Delay(SharedData.scroll2, token); // Delay с отменой
+                Console.WriteLine("Квадрат: Выход из КС");
+                SharedData.flagDraw[myId] = false;
             }
         }
 
         private Point ReadPointFromFile()
         {
-            int myId = 0;
+            int myId = 1;
             SharedData.flagFile[myId] = true;
             SharedData.turnFile = 1 - myId;
             while (SharedData.flagFile[1 - myId] && SharedData.turnFile == (1 - myId))

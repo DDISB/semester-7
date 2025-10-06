@@ -39,9 +39,10 @@
             // 
             // button1
             // 
-            button1.Location = new Point(258, 218);
+            button1.Location = new Point(380, 230);
+            button1.Margin = new Padding(4, 5, 4, 5);
             button1.Name = "button1";
-            button1.Size = new Size(249, 84);
+            button1.Size = new Size(356, 140);
             button1.TabIndex = 0;
             button1.Text = "Запуск";
             button1.UseVisualStyleBackColor = true;
@@ -49,22 +50,24 @@
             // 
             // trackBar1
             // 
-            trackBar1.Location = new Point(92, 97);
+            trackBar1.Location = new Point(13, 127);
+            trackBar1.Margin = new Padding(4, 5, 4, 5);
             trackBar1.Maximum = 1000;
             trackBar1.Minimum = 10;
             trackBar1.Name = "trackBar1";
-            trackBar1.Size = new Size(104, 45);
+            trackBar1.Size = new Size(352, 69);
             trackBar1.TabIndex = 1;
             trackBar1.Value = 100;
             trackBar1.Scroll += trackBar1_Scroll;
             // 
             // trackBar2
             // 
-            trackBar2.Location = new Point(558, 97);
+            trackBar2.Location = new Point(755, 127);
+            trackBar2.Margin = new Padding(4, 5, 4, 5);
             trackBar2.Maximum = 1000;
             trackBar2.Minimum = 10;
             trackBar2.Name = "trackBar2";
-            trackBar2.Size = new Size(104, 45);
+            trackBar2.Size = new Size(375, 69);
             trackBar2.TabIndex = 2;
             trackBar2.Value = 100;
             trackBar2.Scroll += trackBar2_Scroll;
@@ -72,31 +75,34 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(92, 46);
+            label1.Location = new Point(60, 77);
+            label1.Margin = new Padding(4, 0, 4, 0);
             label1.Name = "label1";
-            label1.Size = new Size(145, 15);
+            label1.Size = new Size(219, 25);
             label1.TabIndex = 3;
             label1.Text = "Задержка треугольников";
             // 
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(558, 46);
+            label2.Location = new Point(797, 77);
+            label2.Margin = new Padding(4, 0, 4, 0);
             label2.Name = "label2";
-            label2.Size = new Size(118, 15);
+            label2.Size = new Size(183, 25);
             label2.TabIndex = 4;
             label2.Text = "Задержка квадратов";
             // 
             // settingForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(10F, 25F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(800, 450);
+            ClientSize = new Size(1143, 750);
             Controls.Add(label2);
             Controls.Add(label1);
             Controls.Add(trackBar2);
             Controls.Add(trackBar1);
             Controls.Add(button1);
+            Margin = new Padding(4, 5, 4, 5);
             Name = "settingForm";
             Text = "settingForm";
             ((System.ComponentModel.ISupportInitialize)trackBar1).EndInit();

@@ -20,7 +20,7 @@ namespace task1
         {
             this.form = form;
             this.filePath = filePath;
-            cts = new CancellationTokenSource();
+            //cts = new CancellationTokenSource();
             if (File.Exists(filePath))
             {
                 fileReader = new StreamReader(filePath);
@@ -66,8 +66,15 @@ namespace task1
                 int myId = 0;
                 SharedData.flagDraw[myId] = true;
                 SharedData.turnDraw = 1 - myId;
+                Console.WriteLine("Треугольник: попытка войти в КС рисовение");
+                bool flagConsole = true;
                 while (SharedData.flagDraw[1 - myId] && SharedData.turnDraw == (1 - myId))
                 {
+                    if (flagConsole)
+                    {
+                        Console.WriteLine("Треугольник: Ожидание доступа к КС");
+                        flagConsole = false;
+                    }
                     if (token.IsCancellationRequested) break; // Проверка в busy-wait
                     await Task.Yield();
                 }
@@ -78,15 +85,17 @@ namespace task1
                     break;
                 }
 
+                Console.WriteLine("Треугольник: Работа в КС");
                 // Критическая секция: Рисование
                 Point point2 = new Point(point.X - 20, point.Y - 20);
                 Point point3 = new Point(point.X - 40, point.Y);
                 DrawTriangle(point, point2, point3);
 
+                await Task.Delay(SharedData.scroll1, token); // Delay с отменой
                 // Выход
+                Console.WriteLine("Треугольник: Выход из КС");
                 SharedData.flagDraw[myId] = false;
 
-                await Task.Delay(SharedData.scroll1, token); // Delay с отменой
             }
         }
 

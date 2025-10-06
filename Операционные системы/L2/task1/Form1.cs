@@ -11,19 +11,21 @@ namespace task1
         public Form1()
         {
             InitializeComponent();
-            // --- ИЗМЕНЕНИЕ ЗДЕСЬ ---
-            // Включаем двойную буферизацию для формы, чтобы устранить мерцание
+            // Включаем двойную буферизацию для формы
             this.DoubleBuffered = true;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            //Утсанавливаем начальные значения для КС
             SharedData.flagDraw = [false, false];
-        //public static volatile int turnDraw = 0;
+            SharedData.turnDraw = 0;
 
-        //public static volatile bool[] flagFile = new bool[2] { false, false };
-        //public static volatile int turnFile = 0;
-        triangleDrawer = new TriangleDrawer(this, filePath);
+            SharedData.flagFile = [false, false];
+            SharedData.turnFile = 0;
+
+            //Создаем и запускаем потоки
+            triangleDrawer = new TriangleDrawer(this, filePath);
             triangleDrawer.Start();
 
             squareDrawer = new SquareDrawer(this, filePath);

@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\study\\win\\semester-7\\Операционные системы\\L2\\task1\\task1.csproj",
+      "projectUniqueName": "C:\\Study\\semester-7\\Операционные системы\\L2\\task1\\task1.csproj",
       "projectName": "task1",
-      "projectPath": "D:\\study\\win\\semester-7\\Операционные системы\\L2\\task1\\task1.csproj",
+      "projectPath": "C:\\Study\\semester-7\\Операционные системы\\L2\\task1\\task1.csproj",
       "packagesPath": "C:\\Users\\disbd\\.nuget\\packages\\",
-      "outputPath": "D:\\study\\win\\semester-7\\Операционные системы\\L2\\task1\\obj\\",
+      "outputPath": "C:\\Study\\semester-7\\Операционные системы\\L2\\task1\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

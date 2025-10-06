@@ -3,6 +3,7 @@ D:\study\win\semester-7\Операционные системы\L2\task1\bin\Deb
 D:\study\win\semester-7\Операционные системы\L2\task1\bin\Debug\net8.0-windows\task1.runtimeconfig.json
 D:\study\win\semester-7\Операционные системы\L2\task1\bin\Debug\net8.0-windows\task1.dll
 D:\study\win\semester-7\Операционные системы\L2\task1\bin\Debug\net8.0-windows\task1.pdb
+D:\study\win\semester-7\Операционные системы\L2\task1\obj\Debug\net8.0-windows\task1.Form1.resources
 D:\study\win\semester-7\Операционные системы\L2\task1\obj\Debug\net8.0-windows\task1.csproj.GenerateResource.cache
 D:\study\win\semester-7\Операционные системы\L2\task1\obj\Debug\net8.0-windows\task1.GeneratedMSBuildEditorConfig.editorconfig
 D:\study\win\semester-7\Операционные системы\L2\task1\obj\Debug\net8.0-windows\task1.AssemblyInfoInputs.cache
@@ -14,4 +15,4 @@ D:\study\win\semester-7\Операционные системы\L2\task1\obj\Deb
 D:\study\win\semester-7\Операционные системы\L2\task1\obj\Debug\net8.0-windows\task1.pdb
 D:\study\win\semester-7\Операционные системы\L2\task1\obj\Debug\net8.0-windows\task1.genruntimeconfig.cache
 D:\study\win\semester-7\Операционные системы\L2\task1\obj\Debug\net8.0-windows\ref\task1.dll
-D:\study\win\semester-7\Операционные системы\L2\task1\obj\Debug\net8.0-windows\task1.SharedData.resources
+D:\study\win\semester-7\Операционные системы\L2\task1\obj\Debug\net8.0-windows\task1.settingForm.resources

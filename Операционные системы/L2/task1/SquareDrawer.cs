@@ -210,9 +210,9 @@ namespace task1
                 DrawSquare(point, point2, point3, point4);
 
                 // Выход
-                await Task.Delay(SharedData.scroll2, token); // Delay с отменой
                 Console.WriteLine("Квадрат: Выход из КС");
                 SharedData.flagDraw[myId] = false;
+                await Task.Delay(SharedData.scroll2, token); // Delay с отменой
             }
         }
 

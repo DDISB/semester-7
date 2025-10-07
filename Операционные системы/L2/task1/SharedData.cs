@@ -14,7 +14,7 @@ namespace task1
         public static volatile bool[] flagFile = new bool[2] { false, false };
         public static volatile int turnFile = 0;
 
-        public static int scroll1 = 100;
-        public static int scroll2 = 100;
+        public static int scroll1 = 250;
+        public static int scroll2 = 250;
     }
 }

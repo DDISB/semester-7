@@ -91,10 +91,10 @@ namespace task1
                 Point point3 = new Point(point.X - 40, point.Y);
                 DrawTriangle(point, point2, point3);
 
-                await Task.Delay(SharedData.scroll1, token); // Delay с отменой
                 // Выход
                 Console.WriteLine("Треугольник: Выход из КС");
                 SharedData.flagDraw[myId] = false;
+                await Task.Delay(SharedData.scroll1, token); // Delay с отменой
 
             }
         }

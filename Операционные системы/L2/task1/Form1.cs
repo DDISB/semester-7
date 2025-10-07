@@ -1,5 +1,5 @@
 namespace task1
-{   
+{
     public partial class Form1 : Form
     {
         private TriangleDrawer triangleDrawer;
@@ -23,6 +23,9 @@ namespace task1
 
             SharedData.flagFile = [false, false];
             SharedData.turnFile = 0;
+
+            SharedData.scroll1 = 250;
+            SharedData.scroll2 = 250;
 
             //Создаем и запускаем потоки
             triangleDrawer = new TriangleDrawer(this, filePath);
@@ -66,6 +69,18 @@ namespace task1
             {
                 await squareDrawer.Stop();
             }
+
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            SharedData.scroll1 = trackBar1.Value;
+        }
+
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+            SharedData.scroll2 = trackBar2.Value;
+
         }
     }
 }

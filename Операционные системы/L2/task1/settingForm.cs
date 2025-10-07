@@ -11,6 +11,7 @@ using static System.Windows.Forms.DataFormats;
 
 namespace task1
 {
+
     public partial class settingForm : Form
     {
         public settingForm()
@@ -24,14 +25,6 @@ namespace task1
             newForm.ShowDialog();
         }
 
-        private void trackBar1_Scroll(object sender, EventArgs e)
-        {
-            SharedData.scroll1 = trackBar1.Value;
-        }
-
-        private void trackBar2_Scroll(object sender, EventArgs e)
-        {
-            SharedData.scroll2 = trackBar2.Value;
-        }
+       
     }
 }

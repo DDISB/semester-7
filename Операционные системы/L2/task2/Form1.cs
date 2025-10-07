@@ -39,14 +39,22 @@ namespace task2
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox3.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox3.Image = Image.FromFile(@"..\..\..\пицца.png");
+            //pictureBox3.Image = Image.FromFile(@"..\..\..\пицца.png");
+            pictureBox3.Image = Image.FromFile(@".\пицца.png");
 
-            imagePaths.Add(@"..\..\..\повар готовит.png");
-            imagePaths.Add(@"..\..\..\повар с коробкой.png");
-            imagePaths.Add(@"..\..\..\повар ждет.png");
-            imagePaths.Add(@"..\..\..\мики ждет.png");
-            imagePaths.Add(@"..\..\..\мики пица.png");
-            imagePaths.Add(@"..\..\..\мики коробка.png");
+            //imagePaths.Add(@"..\..\..\повар готовит.png");
+            //imagePaths.Add(@"..\..\..\повар с коробкой.png");
+            //imagePaths.Add(@"..\..\..\повар ждет.png");
+            //imagePaths.Add(@"..\..\..\мики ждет.png");
+            //imagePaths.Add(@"..\..\..\мики пица.png");
+            //imagePaths.Add(@"..\..\..\мики коробка.png");
+
+            imagePaths.Add(@".\повар готовит.png");
+            imagePaths.Add(@".\повар с коробкой.png");
+            imagePaths.Add(@".\повар ждет.png");
+            imagePaths.Add(@".\мики ждет.png");
+            imagePaths.Add(@".\мики пица.png");
+            imagePaths.Add(@".\мики коробка.png");
 
             if (imagePaths.Count > 0 && File.Exists(imagePaths[0]))
             {

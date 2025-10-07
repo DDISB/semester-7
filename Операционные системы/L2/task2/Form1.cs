@@ -5,6 +5,7 @@ namespace task2
     {
         public static int delay1 = 500;
         public static int delay2 = 500;
+        public static int delay3 = 500;
         public Queue<string> buffer = new Queue<string>();
         public List<string> imagePaths = new List<string>();
 
@@ -25,6 +26,7 @@ namespace task2
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
             supplier = new Supplier(buffer, ref bufferMutex, pictureBox1, imagePaths, this);
             supplier.Start();
 
@@ -74,6 +76,13 @@ namespace task2
             supplier?.Stop();
             consumer?.Stop();
             base.OnFormClosing(e);
+        }
+
+        private void trackBar3_Scroll(object sender, EventArgs e)
+        {
+            delay3 = trackBar3.Value;
+            consumer?.UpdateBufferDelay(delay3);
+            supplier?.UpdateBufferDelay(delay3);
         }
     }
 

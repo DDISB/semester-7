@@ -9,6 +9,7 @@ internal class Supplier
     private PictureBox pbox;
     private List<string> imagePaths;
     private int currentDelay = 500;
+    private int bufferDelay = 500;
     private Form1 form;
 
     public Supplier(Queue<string> buffer, ref Mutex bufferMutex, PictureBox pbox, List<string> imagePaths, Form1 form)
@@ -30,6 +31,11 @@ internal class Supplier
     public void UpdateDelay(int newDelay)
     {
         currentDelay = newDelay;
+    }
+
+    public void UpdateBufferDelay(int newDelay)
+    {
+        bufferDelay = newDelay;
     }
 
     public void Stop()
@@ -70,7 +76,7 @@ internal class Supplier
                     if (token.IsCancellationRequested) break;
                     buffer.Enqueue($"[{DateTime.Now:T}] pizza");
                     currentCount = buffer.Count;
-                    Thread.Sleep(1000);
+                    Thread.Sleep(bufferDelay);
                     Console.WriteLine($"Supplier добавил пиццу, в очереди: {buffer.Count}");
                     UpdateImageSafe(imagePaths[0]); // Повар готовит
                 }

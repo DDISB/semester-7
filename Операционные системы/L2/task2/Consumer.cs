@@ -9,6 +9,7 @@ internal class Consumer
     private PictureBox pbox;
     private List<string> imagePaths;
     private int currentDelay = 500;
+    private int bufferDelay = 500;
     private Form1 form;
 
     public Consumer(Queue<string> buffer, ref Mutex bufferMutex, PictureBox pbox, List<string> imagePaths, Form1 form)
@@ -30,6 +31,11 @@ internal class Consumer
     public void UpdateDelay(int newDelay)
     {
         currentDelay = newDelay;
+    }
+
+    public void UpdateBufferDelay(int newDelay)
+    {
+        bufferDelay = newDelay;
     }
 
     public void Stop()
@@ -68,7 +74,7 @@ internal class Consumer
                         UpdateImageSafe(imagePaths[5]); // Мики с пиццей
                         buffer.Dequeue();
                         currentCount = buffer.Count;
-                        Thread.Sleep(1000);
+                        Thread.Sleep(bufferDelay);
                         Console.WriteLine($"Consumer взял пиццу, в очереди: {buffer.Count}");
 
                     }

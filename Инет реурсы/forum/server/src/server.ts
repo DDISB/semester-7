@@ -7,6 +7,7 @@ import { UserInput, LoginInput, CategoryInput } from './types/index'
 import { handleCategory } from '$/api/category/handler'
 import { getRequestBody } from '$/utils/getRequestBody';
 import { handleSubcategory } from '$/api/subcategory/handler';
+import { handlePage } from '$/pages/handler';
 
 const server = http.createServer(async (req, res) => {
   const { method, url } = req
@@ -32,7 +33,9 @@ const server = http.createServer(async (req, res) => {
   } else if (pathname.startsWith('/api/category')) {
     await handleCategory(req, res, method, pathname)
   } else if (pathname.startsWith('/api/subcategory')) {
-    await handleSubcategory(req, res, method, pathname)
+    await handleSubcategory(req, res, method, pathname)  
+  } else if (pathname.startsWith('/page')) {
+    await handlePage(req, res, method, pathname)
   } else {
     res.writeHead(404, { 'Content-Type': 'application/json' })
     res.end(JSON.stringify({ error: 'Route not found' }))

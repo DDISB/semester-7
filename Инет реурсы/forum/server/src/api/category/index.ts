@@ -1,1 +1,0 @@
-export { getAll } from './getAll';

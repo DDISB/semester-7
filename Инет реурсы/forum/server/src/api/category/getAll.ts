@@ -1,7 +1,7 @@
 import { prisma } from '$/utils/database'; 
-import { GetAllCategoriesResponse } from '$/types/index';
+import { CategoriesResponse } from '$/types/index';
 
-export async function getAll(): Promise<GetAllCategoriesResponse> {
+export async function getAll(): Promise<CategoriesResponse> {
   try {
     const categories = await prisma.category.findMany({
       orderBy: {

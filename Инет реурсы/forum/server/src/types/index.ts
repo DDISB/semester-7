@@ -1,10 +1,19 @@
-import { Category } from '@prisma/client';
+import { Category, Subcategory } from '@prisma/client';
 
 export interface UserInput {
   email: string
   username: string
   password: string
 }
+
+export interface AuthUser {
+  id: string;
+  email: string;
+  username: string;
+  role: UserRole;
+}
+
+export type UserRole = 'USER' | 'MODERATOR' | 'ADMIN'
 
 export interface LoginInput {
   email: string
@@ -23,7 +32,7 @@ export interface AuthResponse {
   token?: string
 }
 
-export interface GetAllCategoriesResponse {
+export interface CategoriesResponse {
   success: boolean;
   message: string;
   categories?: {
@@ -32,11 +41,28 @@ export interface GetAllCategoriesResponse {
   };
 }
 
+export interface SubcategoriesResponse {
+  success: boolean;
+  message: string;
+  subcategories?: {
+    data: Subcategory[];
+    count: number;
+  };
+}
+
 export interface CategoryInput
 {
   name: string
-  description: string
-  order: number
+  description?: string
+  order?: number
+}
+
+export interface SubcategoryInput
+{
+  name: string
+  categoryId: string
+  description?: string
+  order?: number
 }
 
 export interface CategoryResponse {
@@ -44,3 +70,10 @@ export interface CategoryResponse {
   message: string;
   category?: Category;
 }
+
+export interface SubcategoryResponse {
+  success: boolean;
+  message: string;
+  subcategory?: Subcategory;
+}
+

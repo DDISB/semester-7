@@ -1,16 +1,16 @@
 import { prisma } from '$/utils/database';
-import { CategoryInput, CategoryResponse, AuthUser } from '$/types/index';
-import { requireAdmin } from '$/utils/middleware';
+import { SubcategoryInput, SubcategoryResponse, AuthUser } from '$/types/index';
+import { requireAuth } from '$/utils/middleware';
 
-export async function createCategory(
-  categoryData: CategoryInput, 
+export async function createSubcategory(
+  subcategoryData: SubcategoryInput, 
   user?: AuthUser
-): Promise<CategoryResponse> {
+): Promise<SubcategoryResponse> {
   try {
     // Проверка прав через middleware
-    const adminUser = requireAdmin(user);
+    const User = requireAuth(user);
 
-    const { name, description, order = 0 } = categoryData;
+    const { name, categoryId, description, order = 0 } = subcategoryData;
 
     // Валидация order
     if (order < 0 || order > 100) {
@@ -21,33 +21,34 @@ export async function createCategory(
     }
 
     // Проверка существующей категории
-    const existingCategory = await prisma.category.findFirst({
-      where: { name }
+    const existingCategory = await prisma.category.findUnique({
+      where: { id: categoryId }
     });
 
-    if (existingCategory) {
+    if (!existingCategory) {
       return {
         success: false,
-        message: 'Категория с таким названием уже существует'
+        message: 'Нет категории с указанным id'
       };
     }
 
     // Создание категории
-    const category = await prisma.category.create({
+    const subcategory = await prisma.subcategory.create({
       data: {
         name,
+        categoryId,
         description,
         order
       }
     });
 
     // Логируем действие
-    console.log(`Admin ${adminUser.email} created category: ${name}`);
+    console.log(`User ${User.email} created category: ${name}`);
 
     return {
       success: true,
-      message: 'Категория успешно создана',
-      category: category
+      message: 'Подкатегория успешно создана',
+      subcategory: subcategory
     };
   } catch (error) {
     console.error('Create category error:', error);
@@ -62,7 +63,7 @@ export async function createCategory(
     
     return {
       success: false,
-      message: 'Ошибка при создании категории',
+      message: 'Ошибка при создании подкатегории',
     };
   }
 }

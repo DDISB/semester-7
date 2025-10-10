@@ -1,0 +1,287 @@
+<!-- <!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Категория - <%= category.name %></title>
+</head>
+<body>
+  <h1>Категория - <%= category.name %></h1>
+  
+  <% if (subcategories && subcategories.length > 0) { %>
+    <h2>Подкатегории:</h2>
+    <ul>
+      <% subcategories.forEach(subcategory => { %>
+        <li>
+          <a href="/subcategory/<%= subcategory.id %>">
+            <%= subcategory.name %>
+          </a>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>В этой категории нет подкатегорий</p>
+  <% } %>
+
+  <% if (error) { %>
+    <p style="color: red;"><%= error %></p>
+  <% } %>
+
+  <p><a href="/">На главную</a></p>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Категория - <%= category.name %></title>
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.5);
+    }
+    
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 500px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+    
+    .btn-primary {
+      background-color: #007bff;
+      color: white;
+    }
+    
+    .btn-secondary {
+      background-color: #6c757d;
+      color: white;
+    }
+    
+    .error-message {
+      color: red;
+      margin-top: 10px;
+    }
+    
+    .success-message {
+      color: green;
+      margin-top: 10px;
+    }
+    
+    .subcategories-list {
+      list-style: none;
+      padding: 0;
+    }
+    
+    .subcategories-list li {
+      margin-bottom: 10px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Категория - <%= category.name %></h1>
+  
+  <!-- Кнопка создания подкатегории для авторизованных пользователей -->
+  <% if (typeof user !== 'undefined' && user) { %>
+    <button id="createSubcategoryBtn" class="btn btn-primary">Создать подкатегорию</button>
+  <% } %>
+  
+  <% if (subcategories && subcategories.length > 0) { %>
+    <h2>Подкатегории:</h2>
+    <ul class="subcategories-list">
+      <% subcategories.forEach(subcategory => { %>
+        <li>
+          <a href="/subcategory/<%= subcategory.id %>">
+            <%= subcategory.name %>
+          </a>
+          <% if (subcategory.description) { %>
+            <p><%= subcategory.description %></p>
+          <% } %>
+        </li>
+      <% }) %>
+    </ul>
+  <% } else { %>
+    <p>В этой категории нет подкатегорий</p>
+  <% } %>
+
+  <% if (error) { %>
+    <p style="color: red;"><%= error %></p>
+  <% } %>
+
+  <p><a href="/">На главную</a></p>
+
+  <!-- Модальное окно создания подкатегории -->
+  <div id="createSubcategoryModal" class="modal">
+    <div class="modal-content">
+      <h2>Создать подкатегорию</h2>
+      <form id="createSubcategoryForm">
+        <input type="hidden" id="categoryId" name="categoryId" value="<%= category.id %>">
+        
+        <div class="form-group">
+          <label for="subcategoryName">Название:</label>
+          <input type="text" id="subcategoryName" name="name" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="subcategoryDescription">Описание:</label>
+          <textarea id="subcategoryDescription" name="description" rows="3"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="subcategoryOrder">Порядок (0-100):</label>
+          <input type="number" id="subcategoryOrder" name="order" min="0" max="100" value="0">
+        </div>
+        
+        <div id="subcategoryFormMessage" class="error-message"></div>
+        
+        <div>
+          <button type="submit" class="btn btn-primary">Создать</button>
+          <button type="button" id="cancelSubcategoryBtn" class="btn btn-secondary">Отмена</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Функция для получения токена из cookies
+    function getToken() {
+      const cookies = document.cookie.split(';');
+      for (let cookie of cookies) {
+        const [name, value] = cookie.trim().split('=');
+        if (name === 'token' || name === 'session') {
+          return decodeURIComponent(value);
+        }
+      }
+      return null;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      const modal = document.getElementById('createSubcategoryModal');
+      const createBtn = document.getElementById('createSubcategoryBtn');
+      const cancelBtn = document.getElementById('cancelSubcategoryBtn');
+      const form = document.getElementById('createSubcategoryForm');
+      const formMessage = document.getElementById('subcategoryFormMessage');
+
+      // Открытие модального окна
+      if (createBtn) {
+        createBtn.addEventListener('click', function() {
+          modal.style.display = 'block';
+        });
+      }
+
+      // Закрытие модального окна
+      if (cancelBtn) {
+        cancelBtn.addEventListener('click', function() {
+          modal.style.display = 'none';
+          formMessage.textContent = '';
+          form.reset();
+        });
+      }
+
+      // Закрытие при клике вне модального окна
+      window.addEventListener('click', function(event) {
+        if (event.target === modal) {
+          modal.style.display = 'none';
+          formMessage.textContent = '';
+          form.reset();
+        }
+      });
+
+      // Отправка формы
+      if (form) {
+        form.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const token = getToken();
+          if (!token) {
+            formMessage.textContent = 'Ошибка авторизации. Пожалуйста, войдите снова.';
+            formMessage.className = 'error-message';
+            return;
+          }
+
+          const formData = {
+            name: document.getElementById('subcategoryName').value,
+            description: document.getElementById('subcategoryDescription').value,
+            order: parseInt(document.getElementById('subcategoryOrder').value),
+            categoryId: document.getElementById('categoryId').value
+          };
+
+          try {
+            const response = await fetch('/api/subcategory/create', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+              },
+              body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              formMessage.textContent = 'Подкатегория успешно создана!';
+              formMessage.className = 'success-message';
+              
+              setTimeout(() => {
+                window.location.reload();
+              }, 1500);
+            } else {
+              formMessage.textContent = result.message || 'Ошибка при создании подкатегории';
+              formMessage.className = 'error-message';
+            }
+          } catch (error) {
+            formMessage.textContent = 'Ошибка сети при создании подкатегории';
+            formMessage.className = 'error-message';
+            console.error('Create subcategory error:', error);
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

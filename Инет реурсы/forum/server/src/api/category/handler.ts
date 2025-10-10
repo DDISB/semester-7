@@ -46,6 +46,7 @@ async function handleCreateCategory(req: http.IncomingMessage, res: http.ServerR
     const body = await getRequestBody(req)
     const categoryData: CategoryInput = JSON.parse(body)
     const user = await getSession(req)
+    console.log('user -- ',  user)
     console.log(user)
 
     // Валидация

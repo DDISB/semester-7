@@ -55,15 +55,15 @@ model Subcategory {
   category    Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   
   // Отношения к разделам
-  sections    Section[]
+  threads    Thread[]
   
   @@map("subcategories")
 }
 
-// Уровень 3: Разделы (вместо форумов)
-model Section {
+// Уровень 3: Треды (вместо секций)
+model Thread {
   id            String   @id @default(cuid())
-  name          String
+  title         String
   description   String?
   order         Int      @default(0)
   createdAt     DateTime @default(now())
@@ -76,11 +76,14 @@ model Section {
   // Отношения к постам
   posts         Post[]
   
-  // Статистика раздела
+  // Статистика треда
   postCount     Int      @default(0)
+  viewCount     Int      @default(0)
   lastPostAt    DateTime?
+  isPinned      Boolean  @default(false)
+  isLocked      Boolean  @default(false)
   
-  @@map("sections")
+  @@map("threads")
 }
 
 model Post {
@@ -94,19 +97,18 @@ model Post {
   authorId  String
   author    User    @relation(fields: [authorId], references: [id], onDelete: Cascade)
   
-  // Связь с разделом
-  sectionId String
-  section   Section @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  // Связь с тредом
+  threadId  String
+  thread    Thread  @relation(fields: [threadId], references: [id], onDelete: Cascade)
   
   // Иерархия постов (для ответов)
-  parentId  String?
-  parent    Post?   @relation("PostReplies", fields: [parentId], references: [id])
-  replies   Post[]  @relation("PostReplies")
+  // parentId  String?
+  // parent    Post?   @relation("PostReplies", fields: [parentId], references: [id])
+  // replies   Post[]  @relation("PostReplies")
   
-  // Статистика
+  // Статистика поста
   viewCount Int     @default(0)
   isPinned  Boolean @default(false)
-  isLocked  Boolean @default(false)
   
   @@map("posts")
 }

@@ -7,6 +7,7 @@ import { categoriesPage } from './categories'
 import { homePage } from './home'
 import { loginPage } from './login'
 import { registerPage } from './regirster'
+import { categoryPage } from './category'
 
 export async function handlePage(
   req: IncomingMessage,
@@ -22,6 +23,12 @@ export async function handlePage(
       await registerPage(req, res)
     } else if (method === 'GET' && pathname === '/page/categories') {
       await categoriesPage(req, res)
+    } else if (method === 'GET' && pathname.startsWith('/page/category/')) {
+      const categoryId = pathname.split('/')[3]
+      await categoryPage(req, res, categoryId)
+    } else if (method === 'GET' && pathname.startsWith('/page/subcategory/')) {
+      const subcategoryId = pathname.split('/')[3]
+      // await subcategoryPage(req, res, subcategoryId)
     // } else if (method === 'GET' && pathname === '/page/subcategories') {
     
     } else {

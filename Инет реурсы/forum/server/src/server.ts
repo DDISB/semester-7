@@ -8,6 +8,7 @@ import { handleCategory } from '$/api/category/handler'
 import { getRequestBody } from '$/utils/getRequestBody';
 import { handleSubcategory } from '$/api/subcategory/handler';
 import { handlePage } from '$/pages/handler';
+import { logout } from './auth/logout';
 
 const server = http.createServer(async (req, res) => {
   const { method, url } = req
@@ -36,6 +37,8 @@ const server = http.createServer(async (req, res) => {
     await handleRegister(req, res)
   } else if (method === 'POST' && pathname === '/api/login') {
     await handleLogin(req, res)
+  } else if (method === 'GET' && pathname === '/logout') {
+    await handleLogout(req, res)
   } else if (pathname.startsWith('/api/category')) {
     await handleCategory(req, res, method, pathname)
   } else if (pathname.startsWith('/api/subcategory')) {
@@ -97,6 +100,16 @@ async function handleLogin(req: http.IncomingMessage, res: http.ServerResponse) 
   }
 }
 
+
+async function handleLogout(req: http.IncomingMessage, res: http.ServerResponse) {
+  try {
+    await logout(req, res)
+  } catch (error) {
+    console.error('Register handler error:', error)
+    res.writeHead(500, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ error: 'Internal server error' }))
+  }
+}
 
 
 const PORT = process.env.PORT || 3000

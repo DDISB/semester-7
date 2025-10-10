@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Регистрация</title>
+</head>
+<body>
+  <h1>Регистрация</h1>
+  
+  <form id="registerForm">
+    <div>
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" required>
+    </div>
+    
+    <div>
+      <label for="username">Имя пользователя:</label>
+      <input type="text" id="username" name="username" required>
+    </div>
+    
+    <div>
+      <label for="password">Пароль:</label>
+      <input type="password" id="password" name="password" required>
+    </div>
+    
+    <button type="submit">Зарегистрироваться</button>
+  </form>
+
+  <div id="errorMessage" style="color: red; display: none;"></div>
+  <div id="successMessage" style="color: green; display: none;"></div>
+
+  <p>Уже есть аккаунт? <a href="/login">Войти</a></p>
+
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const formData = new FormData(this);
+      const registerData = {
+        email: formData.get('email'),
+        username: formData.get('username'),
+        password: formData.get('password')
+      };
+
+      // Скрываем предыдущие сообщения
+      document.getElementById('errorMessage').style.display = 'none';
+      document.getElementById('successMessage').style.display = 'none';
+
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(registerData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success && data.token) {
+          // Показываем успешное сообщение
+          document.getElementById('successMessage').textContent = data.message || 'Регистрация успешна!';
+          document.getElementById('successMessage').style.display = 'block';
+          
+          // Сохраняем токен в куки
+          document.cookie = `token=${data.token}; path=/; max-age=${7 * 24 * 60 * 60}`;
+          
+          // Редирект через 2 секунды
+          setTimeout(() => {
+            window.location.href = '/page/categories';
+          }, 2000);
+        } else {
+          // Показываем ошибку
+          document.getElementById('errorMessage').textContent = data.message || 'Ошибка регистрации';
+          document.getElementById('errorMessage').style.display = 'block';
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        document.getElementById('errorMessage').textContent = 'Ошибка соединения';
+        document.getElementById('errorMessage').style.display = 'block';
+      }
+    });
+
+    // Валидация формы
+    document.getElementById('registerForm').addEventListener('input', function() {
+      const email = document.getElementById('email').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      // Простая валидация
+      if (email && username && password.length >= 6) {
+        document.querySelector('button[type="submit"]').disabled = false;
+      } else {
+        document.querySelector('button[type="submit"]').disabled = true;
+      }
+    });
+  </script>
+</body>
+</html>

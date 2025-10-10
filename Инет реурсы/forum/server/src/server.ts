@@ -26,7 +26,13 @@ const server = http.createServer(async (req, res) => {
   }
 
   // API routes
-  if (method === 'POST' && pathname === '/api/register') {
+
+  if (method === 'GET' && pathname === '/') {
+    res.writeHead(302, {
+        'Location': '/page/home'
+    });
+    res.end();
+  } else if (method === 'POST' && pathname === '/api/register') {
     await handleRegister(req, res)
   } else if (method === 'POST' && pathname === '/api/login') {
     await handleLogin(req, res)
@@ -69,6 +75,7 @@ async function handleRegister(req: http.IncomingMessage, res: http.ServerRespons
 async function handleLogin(req: http.IncomingMessage, res: http.ServerResponse) {
   try {
     const body = await getRequestBody(req)
+    console.log(body)
     const loginData: LoginInput = JSON.parse(body)
 
     // Валидация

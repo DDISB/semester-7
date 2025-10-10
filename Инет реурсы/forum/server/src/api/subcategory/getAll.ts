@@ -1,5 +1,5 @@
-import { prisma } from '$/utils/database'; 
-import { SubcategoriesResponse } from '$/types/index';
+import { prisma } from '$/utils/database' 
+import { SubcategoriesResponse } from '$/types/index'
 
 export async function getAll(categoryId: string): Promise<SubcategoriesResponse> {
   try {
@@ -11,13 +11,13 @@ export async function getAll(categoryId: string): Promise<SubcategoriesResponse>
       orderBy: {
         name: 'asc',
       },
-    });
+    })
 
     if (subcategories.length === 0) {
       return {
         success: false,
         message: 'Подкатегории не найдены',
-      };
+      }
     }
 
     return {
@@ -27,12 +27,12 @@ export async function getAll(categoryId: string): Promise<SubcategoriesResponse>
         data: subcategories,
         count: subcategories.length,
       },
-    };
+    }
   } catch (error) {
-    console.error('Get categories error:', error);
+    console.error('Get categories error:', error)
     return {
       success: false,
       message: 'Ошибка при получении подкатегории',
-    };
+    }
   }
 }

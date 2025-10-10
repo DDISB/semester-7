@@ -1,5 +1,5 @@
-import { prisma } from '$/utils/database'; 
-import { CategoriesResponse } from '$/types/index';
+import { prisma } from '$/utils/database' 
+import { CategoriesResponse } from '$/types/index'
 
 export async function getAll(): Promise<CategoriesResponse> {
   try {
@@ -7,13 +7,13 @@ export async function getAll(): Promise<CategoriesResponse> {
       orderBy: {
         name: 'asc',
       },
-    });
+    })
 
     if (categories.length === 0) {
       return {
         success: false,
         message: 'Категории не найдены',
-      };
+      }
     }
 
     return {
@@ -23,12 +23,12 @@ export async function getAll(): Promise<CategoriesResponse> {
         data: categories,
         count: categories.length,
       },
-    };
+    }
   } catch (error) {
-    console.error('Get categories error:', error);
+    console.error('Get categories error:', error)
     return {
       success: false,
       message: 'Ошибка при получении категорий',
-    };
+    }
   }
 }

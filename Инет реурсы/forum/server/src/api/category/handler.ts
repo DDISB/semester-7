@@ -27,25 +27,25 @@ export async function handleCategory(
 
 async function handleGetALL(req: http.IncomingMessage, res: http.ServerResponse) {
   try {
-    const result = await getAll();
+    const result = await getAll()
 
     if (result.success) {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.writeHead(200, { 'Content-Type': 'application/json' })
     } else {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.writeHead(404, { 'Content-Type': 'application/json' })
     }
-    res.end(JSON.stringify(result));
+    res.end(JSON.stringify(result))
   } catch (error) {
-    console.error('Categories handler error:', error);
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Internal server error' }));
+    console.error('Categories handler error:', error)
+    res.writeHead(500, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ error: 'Internal server error' }))
   }
 }
 async function handleCreateCategory(req: http.IncomingMessage, res: http.ServerResponse) {
   try {
     const body = await getRequestBody(req)
     const categoryData: CategoryInput = JSON.parse(body)
-    const user = await getSession(req);
+    const user = await getSession(req)
     console.log(user)
 
     // Валидация
@@ -55,17 +55,17 @@ async function handleCreateCategory(req: http.IncomingMessage, res: http.ServerR
       return
     }
 
-    const result = await createCategory(categoryData, user);
+    const result = await createCategory(categoryData, user)
 
     if (result.success) {
-      res.writeHead(200, { 'Content-Type': 'application/json' });
+      res.writeHead(200, { 'Content-Type': 'application/json' })
     } else {
-      res.writeHead(404, { 'Content-Type': 'application/json' });
+      res.writeHead(404, { 'Content-Type': 'application/json' })
     }
-    res.end(JSON.stringify(result));
+    res.end(JSON.stringify(result))
   } catch (error) {
-    console.error('Categories handler error:', error);
-    res.writeHead(500, { 'Content-Type': 'application/json' });
-    res.end(JSON.stringify({ error: 'Internal server error' }));
+    console.error('Categories handler error:', error)
+    res.writeHead(500, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ error: 'Internal server error' }))
   }
 }
